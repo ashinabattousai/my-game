@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour
     {
         submitButton.onClick.AddListener(Submit);
         NextWord();
-        hintText.text = "输入后按回车或点 Submit";
+        hintText.text = "Enter Or Submit";
         answerInput.ActivateInputField();
     }
 
@@ -33,7 +33,7 @@ public class GameManager : MonoBehaviour
         string typed = answerInput.text;
 
         bool hit = logic.CheckHit(typed, currentWord);
-        hintText.text = hit ? "✅ Correct" : "❌ Wrong";
+        hintText.text = hit ? "Correct" : "Wrong";
 
         answerInput.text = "";
         answerInput.ActivateInputField();
