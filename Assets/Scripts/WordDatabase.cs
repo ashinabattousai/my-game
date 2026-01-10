@@ -9,22 +9,28 @@ public class WordList
 
 public class WordDatabase : MonoBehaviour
 {
-    [SerializeField] private TextAsset wordsJson; // 把 words.json 拖进来
+    [SerializeField] private TextAsset wordsJson;
 
-    void Start()
+    public string[] Words { get; private set; }  // 让别的脚本能读到词库
+
+    void Awake()
     {
         if (wordsJson == null)
         {
-            Debug.LogError("wordsJson not assigned. Drag words.json into the slot.");
+            Debug.LogError("wordsJson not assigned.");
+            Words = Array.Empty<string>();
             return;
         }
 
         WordList data = JsonUtility.FromJson<WordList>(wordsJson.text);
+        Words = (data != null && data.words != null) ? data.words : Array.Empty<string>();
 
-        int count = (data != null && data.words != null) ? data.words.Length : 0;
-        Debug.Log("Loaded words count: " + count);
+        Debug.Log("Loaded words count: " + Words.Length);
+    }
 
-        if (count > 0)
-            Debug.Log("First word: " + data.words[0]);
+    public string GetRandomWord()
+    {
+        if (Words.Length == 0) return "";
+        return Words[UnityEngine.Random.Range(0, Words.Length)];
     }
 }
