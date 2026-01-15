@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private WordDatabase wordDb;          // 词库来源（负责从 JSON 读取并提供随机单词）
     [SerializeField] private Button submitButton;          // 提交按钮
     [SerializeField] private Button restartButton;         // 重开按钮
+    [SerializeField] private Button nextButton;            // Next 按钮引用
     [SerializeField] private TMP_InputField answerInput;   // 输入框（玩家打字的地方）
     [SerializeField] private EnemyTemplate[] enemyTemplates; // 怪物“模板表”（Slime/Goblin/Boss 等配置）
     [SerializeField] private TMP_Text wordText;            // 显示当前要输入的单词
@@ -23,6 +24,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TMP_Text enemyHPText;         // 显示当前敌人血量
     [SerializeField] private TMP_Text killsText;           // 显示击杀数
     [SerializeField] private TMP_Text playerHpText;        // 显示玩家血量
+    [SerializeField] private TMP_Text modeText;            // 显示当前模式 JP/EN
 
     // === 可调参数（可以在 Inspector 里改数值）===
 
@@ -34,7 +36,11 @@ public class GameManager : MonoBehaviour
     // === 运行时逻辑/状态（游戏进行过程中会变化）===
 
     private BattleLogic logic = new BattleLogic();         // 判定逻辑（输入是否等于目标单词）
-    private string currentWord = "";                       // 当前屏幕上显示的目标单词
+    private Entry currentEntry = null;
+    private string[] currentAnswers = System.Array.Empty<string>(); //空回答
+
+    private string selectedLang = "jp"; // 默认日语
+
 
     private int score = 0;                                 // 当前分数
     private int combo = 0;                                 // 当前连击数（答对+1，答错归零）
@@ -48,12 +54,16 @@ public class GameManager : MonoBehaviour
     private int playerHp = 5;                               // 玩家当前血量（答错会扣）
     private bool gameOver = false;                          // 是否已经 Game Over（为 true 时不再允许提交）
 
+    private bool waitingNext = false;                       // 当为 true 时，表示“当前处于答错后等待 Next”的状态
+
     // Unity：场景开始运行时调用一次
     void Start()
     {
         // 给按钮绑定点击事件：点按钮会调用 Submit()/RestartGame()
         submitButton.onClick.AddListener(Submit);
         restartButton.onClick.AddListener(RestartGame);
+
+        nextButton.onClick.AddListener(NextQuestion);
 
         // 初始化一局（开局/重开都走同一个函数，避免重复代码）
         ResetRun();
@@ -73,13 +83,16 @@ public class GameManager : MonoBehaviour
         // 如果已经 Game Over，直接不做任何事
         if (gameOver) return;
 
+        // 如果正在等待 Next，就不允许继续提交（必须先点 Next）
+        if (waitingNext) return;
+
         // 读取输入框内容
         string typed = answerInput.text;
 
         // 判定是否命中（输入 == 当前单词）
-        bool hit = logic.CheckHit(typed, currentWord);
+        bool hit = CheckHitAny(typed, currentAnswers);
 
-        // 先给一个提示（后面你也可以把提示逻辑写得更丰富）
+        // 先给一个提示（后面也可以把提示逻辑写得更丰富）
         hintText.text = hit ? "Correct" : "Wrong";
 
         if (hit == true)
@@ -120,22 +133,41 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // 刷新界面上的分数/血量等信息
+        // 答错：显示正确答案，但不出下一题，等待玩家按 Next
+        string show = (currentAnswers != null && currentAnswers.Length > 0) ? string.Join(" / ", currentAnswers)
+    : "(no answer)";
+        hintText.text = "Wrong. Answer: " + show;
+
+        // 进入等待 Next 状态
+        waitingNext = true;
+
+        // 暂时禁止提交与输入（可选，但体验更明确）
+        // 如果你希望玩家还能在输入框里编辑但不能提交，也可以只禁用 submitButton
+        submitButton.interactable = false;
+        answerInput.interactable = false;
+
+        // 允许 Next 按钮点击
+        nextButton.interactable = true;
+
         UpdateHud();
+        return; // 关键：直接 return，保证不执行后面的 NextWord()
 
-        // 清空输入框，准备下一题
-        answerInput.text = "";
-        answerInput.ActivateInputField(); // 重新聚焦输入框，方便直接继续打字
-
-        // 出下一题
-        NextWord();
     }
 
     // 出新词：从词库随机取一个并显示到 wordText
     private void NextWord()
     {
-        currentWord = wordDb.GetRandomWord();
-        wordText.text = currentWord;
+        currentEntry = wordDb.GetRandomEntryByLang(selectedLang);
+
+        if (currentEntry == null)
+        {
+            currentAnswers = System.Array.Empty<string>();
+            wordText.text = "(No entries for lang: " + selectedLang + ")";
+            return;
+        }
+
+        wordText.text = currentEntry.prompt;
+        currentAnswers = (currentEntry.answers != null) ? currentEntry.answers : System.Array.Empty<string>();
     }
 
     // 刷新 HUD：把“内存里的状态变量”同步到 UI 文本上
@@ -164,6 +196,24 @@ public class GameManager : MonoBehaviour
     // 这就是一局开始时的“初始状态”
     private void ResetRun()
     {
+        selectedLang = PlayerPrefs.GetString("selected_lang", "jp");
+        UpdateModeLabel();
+
+        Debug.Log("ResetRun selectedLang = " + selectedLang);
+
+        Debug.Log("Before set modeText: " + (modeText ? modeText.text : "modeText is NULL"));
+
+   /*     if (modeText != null)
+        {
+            modeText.text = "MODE >>> " + selectedLang.ToUpper() + " <<<";
+        }
+   */
+        Debug.Log("After set modeText: " + (modeText ? modeText.text : "modeText is NULL"));
+
+
+     //   if (modeText != null)
+     //     modeText.text = (selectedLang == "en") ? "Mode: EN" : "Mode: JP";
+
         gameOver = false;
 
         // 清空进度
@@ -192,6 +242,12 @@ public class GameManager : MonoBehaviour
         // 清空并聚焦输入框
         answerInput.text = "";
         answerInput.ActivateInputField();
+
+        waitingNext = false;
+        nextButton.interactable = false;
+        submitButton.interactable = true;
+        answerInput.interactable = true;
+
     }
 
     // 生成敌人：从模板数组随机抽一个，并根据 kills 给难度加成
@@ -254,5 +310,52 @@ public class GameManager : MonoBehaviour
 
         // 当前血量重置为满血
         currentEnemy.hp = currentEnemy.maxHp;
+    }//生成怪
+
+    private bool CheckHitAny(string input, string[] answers)//检查回答
+    {
+        if (string.IsNullOrWhiteSpace(input) || answers == null || answers.Length == 0)
+            return false;
+
+        string typed = input.Trim();
+        for(int i = 0; i < answers.Length; i++)
+        {
+            if (string.IsNullOrWhiteSpace(answers[i]))
+                continue;
+            if (string.Equals(typed, answers[i].Trim(), System.StringComparison.OrdinalIgnoreCase))
+                return true;
+        }
+        return false;
     }
+
+    private void NextQuestion()
+    {
+        if (!waitingNext)
+            return;
+
+        waitingNext = false;
+
+        submitButton.interactable = true;
+        answerInput.interactable = true;
+
+        nextButton.interactable = false;
+
+        // 清提示（你也可以保留上一条提示）
+        hintText.text = "Enter Or Submit";
+
+        // 清空输入框，出下一题
+        answerInput.text = "";
+        NextWord(); // 你目前函数名叫 NextWord，但它实际上是 NextQuestion 出题
+        UpdateHud();
+
+        // 重新聚焦输入框
+        answerInput.ActivateInputField();
+    }
+
+    private void UpdateModeLabel()
+    {
+        if (modeText == null) return;
+        modeText.text = (selectedLang == "en") ? "Mode: EN" : "Mode: JP";
+    }
+
 }

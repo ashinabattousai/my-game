@@ -1,11 +1,6 @@
 {
-  "words": [
-    "apple",
-    "banana",
-    "computer",
-    "unity",
-    "keyboard",
-    "ありがとう",
-    "さくら"
+  "entries": [
+    { "prompt": "樱花", "answers": ["さくら", "桜"], "lang": "jp" },
+    { "prompt": "苹果", "answers": ["apple"], "lang": "en" }
   ]
 }
