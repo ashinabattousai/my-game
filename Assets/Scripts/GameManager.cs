@@ -89,13 +89,13 @@ public class GameManager : MonoBehaviour
         // 读取输入框内容
         string typed = answerInput.text;
 
-        // 判定是否命中（输入 == 当前单词）
+        // 判定是否命中（输入 == 当前答案集合里的任意一个）
         bool hit = CheckHitAny(typed, currentAnswers);
 
-        // 先给一个提示（后面也可以把提示逻辑写得更丰富）
+        // 先给一个提示
         hintText.text = hit ? "Correct" : "Wrong";
 
-        if (hit == true)
+        if (hit)
         {
             // 命中：连击+1
             combo++;
@@ -111,8 +111,15 @@ public class GameManager : MonoBehaviour
             {
                 kills += 1;
                 hintText.text = "Victory";
-                SpawnEnemy(); // 生成下一只（随机模板 + 难度增益）
+                SpawnEnemy(); // 生成下一只
             }
+
+            // 答对：正常继续出下一题
+            UpdateHud();
+            answerInput.text = "";
+            answerInput.ActivateInputField();
+            NextWord();
+            return;
         }
         else
         {
@@ -122,37 +129,49 @@ public class GameManager : MonoBehaviour
             // 玩家扣血
             playerHp -= 1;
 
-            // 玩家死亡：Game Over，锁定输入与提交（通过 gameOver + 直接 return）
+            // 答错：把这一题加入错题本（只在答错时加入）
+            if (currentEntry != null && WrongBook.Instance != null)
+            {
+                WrongBook.Instance.AddOrUpdate(selectedLang, currentEntry.prompt, currentAnswers);
+                Debug.Log("WrongBook count = " + WrongBook.Instance.GetAll().Count);
+            }
+            else
+            {
+                Debug.LogWarning("WrongBook.Instance is NULL or currentEntry is null. Did you add WrongBook to scene?");
+            }
+
+            // 玩家死亡：Game Over
             if (playerHp <= 0)
             {
-                playerHp = 0;          // 强制归零，避免显示 1/5 这种边界问题
+                playerHp = 0;
                 gameOver = true;
                 hintText.text = "Game Over";
-                UpdateHud();           // 立刻刷新 HUD
-                return;                // 结束 Submit，不再出新词
+                UpdateHud();
+                return;
             }
+
+            // 答错：显示正确答案，但不出下一题，等待玩家按 Next
+            string show = (currentAnswers != null && currentAnswers.Length > 0)
+                ? string.Join(" / ", currentAnswers)
+                : "(no answer)";
+
+            hintText.text = "Wrong. Answer: " + show;
+
+            // 进入等待 Next 状态
+            waitingNext = true;
+
+            // 禁止提交与输入
+            submitButton.interactable = false;
+            answerInput.interactable = false;
+
+            // 允许 Next 按钮点击
+            nextButton.interactable = true;
+
+            UpdateHud();
+            return; // 关键：不执行 NextWord()
         }
-
-        // 答错：显示正确答案，但不出下一题，等待玩家按 Next
-        string show = (currentAnswers != null && currentAnswers.Length > 0) ? string.Join(" / ", currentAnswers)
-    : "(no answer)";
-        hintText.text = "Wrong. Answer: " + show;
-
-        // 进入等待 Next 状态
-        waitingNext = true;
-
-        // 暂时禁止提交与输入（可选，但体验更明确）
-        // 如果你希望玩家还能在输入框里编辑但不能提交，也可以只禁用 submitButton
-        submitButton.interactable = false;
-        answerInput.interactable = false;
-
-        // 允许 Next 按钮点击
-        nextButton.interactable = true;
-
-        UpdateHud();
-        return; // 关键：直接 return，保证不执行后面的 NextWord()
-
     }
+
 
     // 出新词：从词库随机取一个并显示到 wordText
     private void NextWord()
