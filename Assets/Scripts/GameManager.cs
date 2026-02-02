@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Button submitButton;          // 提交按钮
     [SerializeField] private Button restartButton;         // 重开按钮
     [SerializeField] private Button nextButton;            // Next 按钮引用
+    [SerializeField] private Button backHomeButton;         //回到主页
     [SerializeField] private TMP_InputField answerInput;   // 输入框（玩家打字的地方）
     [SerializeField] private EnemyTemplate[] enemyTemplates; // 怪物“模板表”（Slime/Goblin/Boss 等配置）
     [SerializeField] private TMP_Text wordText;            // 显示当前要输入的单词
@@ -62,6 +63,7 @@ public class GameManager : MonoBehaviour
         // 给按钮绑定点击事件：点按钮会调用 Submit()/RestartGame()
         submitButton.onClick.AddListener(Submit);
         restartButton.onClick.AddListener(RestartGame);
+        backHomeButton.onClick.AddListener(BackToHome);
 
         nextButton.onClick.AddListener(NextQuestion);
 
@@ -143,6 +145,7 @@ public class GameManager : MonoBehaviour
             // 玩家死亡：Game Over
             if (playerHp <= 0)
             {
+                backHomeButton.gameObject.SetActive(true);
                 playerHp = 0;
                 gameOver = true;
                 hintText.text = "Game Over";
@@ -216,6 +219,7 @@ public class GameManager : MonoBehaviour
     private void ResetRun()
     {
         selectedLang = PlayerPrefs.GetString("selected_lang", "jp");
+        backHomeButton.gameObject.SetActive(false);
         UpdateModeLabel();
 
         Debug.Log("ResetRun selectedLang = " + selectedLang);
@@ -377,4 +381,8 @@ public class GameManager : MonoBehaviour
         modeText.text = (selectedLang == "en") ? "Mode: EN" : "Mode: JP";
     }
 
+    private void BackToHome()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Home");
+    }
 }
