@@ -36,7 +36,13 @@ public class WrongBookListUI : MonoBehaviour
         for (int i = 0; i < list.Count; i++)
         {
             var view = Instantiate(itemPrefab, content);
-            view.Bind(list[i]);
+            view.Bind(list[i], Refresh);
         }
     }
+
+    private void OnEnable()
+    {
+        Refresh();
+    }
+
 }

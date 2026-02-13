@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/WrongBook.unity
     guid: cf97ecec066012942ac85bc81f86b29b
+  - enabled: 1
+    path: Assets/Scenes/WrongBookDetail.unity
+    guid: 0bc60215aca143b4fa4fe838b4a65ee2
   m_configObjects: {}

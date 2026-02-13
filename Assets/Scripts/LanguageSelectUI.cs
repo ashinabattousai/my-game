@@ -8,7 +8,7 @@ public class LanguageSelectUI : MonoBehaviour
     [SerializeField] private Button btnEN;   // 学英语按钮
 
     // 战斗场景名字
-    [SerializeField] private string battleSceneName = "Main";
+    [SerializeField] private string battleSceneName = "main";
 
     // PlayerPrefs 存储用的 key（固定字符串）
     private const string KEY_LANG = "selected_lang";

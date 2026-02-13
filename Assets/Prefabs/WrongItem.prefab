@@ -465,8 +465,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: PromptText
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: e11fcfce6b0e9674bb5b7998703f483c, type: 2}
-  m_sharedMaterial: {fileID: 7138466047582245652, guid: e11fcfce6b0e9674bb5b7998703f483c, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 01b6a9d0a7257264e8cda7dd32097f39, type: 2}
+  m_sharedMaterial: {fileID: -4713331903131093697, guid: 01b6a9d0a7257264e8cda7dd32097f39, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -786,6 +786,7 @@ MonoBehaviour:
   promptText: {fileID: 2937187941689612775}
   answersText: {fileID: 317198147359347187}
   removeButton: {fileID: 7899734303568241751}
+  detailButton: {fileID: 5988035467231370394}
 --- !u!114 &-3009530353002682444
 MonoBehaviour:
   m_ObjectHideFlags: 0

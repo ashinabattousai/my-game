@@ -15,4 +15,6 @@ public class WrongBookSceneUI : MonoBehaviour
     {
         SceneManager.LoadScene("Home");
     }
+
+
 }
