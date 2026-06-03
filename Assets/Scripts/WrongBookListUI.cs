@@ -1,11 +1,18 @@
+using TMPro;
 using UnityEngine;
 
 public class WrongBookListUI : MonoBehaviour
 {
-    [SerializeField] private Transform content;        // ScrollView/Viewport/Content
-    [SerializeField] private WrongItemView itemPrefab; // WrongItem.prefab 上的组件
+    [SerializeField] private Transform content;
+    [SerializeField] private WrongItemView itemPrefab;
+    [SerializeField] private TMP_Text emptyText;
 
-    void Start()
+    private void Start()
+    {
+        Refresh();
+    }
+
+    private void OnEnable()
     {
         Refresh();
     }
@@ -18,31 +25,21 @@ public class WrongBookListUI : MonoBehaviour
             return;
         }
 
-        // 清空旧列表
         for (int i = content.childCount - 1; i >= 0; i--)
-        {
             Destroy(content.GetChild(i).gameObject);
-        }
 
-        // 读取错题本
         var list = WrongBook.Instance != null ? WrongBook.Instance.GetAll() : null;
-        if (list == null)
-        {
-            Debug.LogWarning("WrongBook.Instance is null in WrongBook scene.");
-            return;
-        }
+        bool isEmpty = list == null || list.Count == 0;
+        if (emptyText != null)
+            emptyText.text = isEmpty ? "No wrong words yet. Keep practicing!" : string.Empty;
 
-        // 生成每一条
+        if (isEmpty)
+            return;
+
         for (int i = 0; i < list.Count; i++)
         {
-            var view = Instantiate(itemPrefab, content);
+            WrongItemView view = Instantiate(itemPrefab, content);
             view.Bind(list[i], Refresh);
         }
     }
-
-    private void OnEnable()
-    {
-        Refresh();
-    }
-
 }

@@ -1,353 +1,237 @@
 ﻿using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-// 游戏主控：负责把“词库/输入/UI/战斗状态”串起来
+// 游戏主控：负责把“词库/输入/UI/战斗状态”串起来。
 public class GameManager : MonoBehaviour
 {
-    // Unity 的 Inspector 里显示的分组标题（只是视觉分组，不影响代码）
     [Header("Scene Refs")]
-    [Header("config")]
+    [SerializeField] private WordDatabase wordDb;
+    [SerializeField] private Button submitButton;
+    [SerializeField] private Button restartButton;
+    [SerializeField] private Button nextButton;
+    [SerializeField] private Button backHomeButton;
+    [SerializeField] private TMP_InputField answerInput;
+    [SerializeField] private EnemyTemplate[] enemyTemplates;
+    [SerializeField] private TMP_Text wordText;
+    [SerializeField] private TMP_Text hintText;
+    [SerializeField] private TMP_Text scoreText;
+    [SerializeField] private TMP_Text comboText;
+    [SerializeField] private TMP_Text enemyHPText;
+    [SerializeField] private TMP_Text killsText;
+    [SerializeField] private TMP_Text playerHpText;
+    [SerializeField] private TMP_Text modeText;
 
-    // === 场景引用（需要你在 Inspector 里拖进去）===
+    [Header("Run Config")]
+    [SerializeField] private int startPlayerMaxHp = 5;
+    [SerializeField] private int startEnemyMaxHp = 3;
+    [SerializeField] private int baseScorePerHit = 10;
+    [SerializeField] private int bossEveryKills = 5;
 
-    [SerializeField] private WordDatabase wordDb;          // 词库来源（负责从 JSON 读取并提供随机单词）
-    [SerializeField] private Button submitButton;          // 提交按钮
-    [SerializeField] private Button restartButton;         // 重开按钮
-    [SerializeField] private Button nextButton;            // Next 按钮引用
-    [SerializeField] private Button backHomeButton;         //回到主页
-    [SerializeField] private TMP_InputField answerInput;   // 输入框（玩家打字的地方）
-    [SerializeField] private EnemyTemplate[] enemyTemplates; // 怪物“模板表”（Slime/Goblin/Boss 等配置）
-    [SerializeField] private TMP_Text wordText;            // 显示当前要输入的单词
-    [SerializeField] private TMP_Text hintText;            // 显示 Correct/Wrong/Victory/Game Over 等提示
-    [SerializeField] private TMP_Text scoreText;           // 显示分数
-    [SerializeField] private TMP_Text comboText;           // 显示连击
-    [SerializeField] private TMP_Text enemyHPText;         // 显示当前敌人血量
-    [SerializeField] private TMP_Text killsText;           // 显示击杀数
-    [SerializeField] private TMP_Text playerHpText;        // 显示玩家血量
-    [SerializeField] private TMP_Text modeText;            // 显示当前模式 JP/EN
+    private Entry currentEntry;
+    private string[] currentAnswers = System.Array.Empty<string>();
+    private string selectedLang = "jp";
+    private int score;
+    private int combo;
+    private readonly EnemyState currentEnemy = new EnemyState();
+    private int damageToEnemy = 1;
+    private int kills;
+    private int playerMaxHp = 5;
+    private int playerHp = 5;
+    private bool gameOver;
+    private bool waitingNext;
 
-    // === 可调参数（可以在 Inspector 里改数值）===
-
-    [SerializeField] private int startPlayerMaxHp = 5;     // 玩家初始最大血量
-    [SerializeField] private int startEnemyMaxHp = 3;      // 当没有 enemyTemplates 时，默认敌人的血量
-    [SerializeField] private int baseScorePerHit = 10;     // 基础得分（会乘以 combo）
-    [SerializeField] private int bossEveryKills = 5;       //每打 5 只怪必出 Boss（规则刷怪）
-
-    // === 运行时逻辑/状态（游戏进行过程中会变化）===
-
-    private BattleLogic logic = new BattleLogic();         // 判定逻辑（输入是否等于目标单词）
-    private Entry currentEntry = null;
-    private string[] currentAnswers = System.Array.Empty<string>(); //空回答
-
-    private string selectedLang = "jp"; // 默认日语
-
-
-    private int score = 0;                                 // 当前分数
-    private int combo = 0;                                 // 当前连击数（答对+1，答错归零）
-
-    private EnemyState currentEnemy = new EnemyState();     // 当前这一只敌人的“状态”（名字/最大血量/当前血量）
-    private int damageToEnemy = 1;                          // 答对一次对敌人造成的伤害
-
-    private int kills = 0;                                  // 击杀数（敌人血量打到 0 的次数）
-
-    private int playerMaxHp = 5;                            // 玩家最大血量（本局会从 startPlayerMaxHp 初始化）
-    private int playerHp = 5;                               // 玩家当前血量（答错会扣）
-    private bool gameOver = false;                          // 是否已经 Game Over（为 true 时不再允许提交）
-
-    private bool waitingNext = false;                       // 当为 true 时，表示“当前处于答错后等待 Next”的状态
-
-    // Unity：场景开始运行时调用一次
-    void Start()
+    private void Start()
     {
-        // 给按钮绑定点击事件：点按钮会调用 Submit()/RestartGame()
-        submitButton.onClick.AddListener(Submit);
-        restartButton.onClick.AddListener(RestartGame);
-        backHomeButton.onClick.AddListener(BackToHome);
-
-        nextButton.onClick.AddListener(NextQuestion);
-
-        // 初始化一局（开局/重开都走同一个函数，避免重复代码）
+        AddListener(submitButton, Submit);
+        AddListener(restartButton, RestartGame);
+        AddListener(backHomeButton, BackToHome);
+        AddListener(nextButton, NextQuestion);
         ResetRun();
     }
 
-    // Unity：每帧调用
-    void Update()
+    private void Update()
     {
-        // 支持按回车提交（键盘输入体验更好）
         if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
             Submit();
     }
 
-    // 提交答案：判定对错 → 改状态（分数/连击/血量）→ 刷新 HUD → 出下一题
     private void Submit()
     {
-        // 如果已经 Game Over，直接不做任何事
-        if (gameOver) return;
+        if (gameOver || waitingNext)
+            return;
 
-        // 如果正在等待 Next，就不允许继续提交（必须先点 Next）
-        if (waitingNext) return;
-
-        // 读取输入框内容
-        string typed = answerInput.text;
-
-        // 判定是否命中（输入 == 当前答案集合里的任意一个）
-        bool hit = CheckHitAny(typed, currentAnswers);
-
-        // 先给一个提示
-        hintText.text = hit ? "Correct" : "Wrong";
+        bool hit = CheckHitAny(answerInput != null ? answerInput.text : string.Empty, currentAnswers);
+        SetHint(hit ? "Correct! +" + (baseScorePerHit * (combo + 1)) : "Wrong!");
 
         if (hit)
         {
-            // 命中：连击+1
             combo++;
-
-            // 得分：基础分 * 连击
             score += baseScorePerHit * combo;
-
-            // 敌人扣血
             currentEnemy.hp -= damageToEnemy;
 
-            // 敌人死亡：击杀数+1，刷下一只敌人
             if (currentEnemy.hp <= 0)
             {
-                kills += 1;
-                hintText.text = "Victory";
-                SpawnEnemy(); // 生成下一只
+                kills++;
+                SetHint("Victory! A new monster appears.");
+                SpawnEnemy();
             }
 
-            // 答对：正常继续出下一题
             UpdateHud();
-            answerInput.text = "";
-            answerInput.ActivateInputField();
+            ClearAndFocusInput();
             NextWord();
             return;
         }
-        else
-        {
-            // 没命中：连击清零
-            combo = 0;
 
-            // 玩家扣血
-            playerHp -= 1;
-
-            // 答错：把这一题加入错题本（只在答错时加入）
-            if (currentEntry != null && WrongBook.Instance != null)
-            {
-                WrongBook.Instance.AddOrUpdate(selectedLang, currentEntry.prompt, currentAnswers);
-                Debug.Log("WrongBook count = " + WrongBook.Instance.GetAll().Count);
-            }
-            else
-            {
-                Debug.LogWarning("WrongBook.Instance is NULL or currentEntry is null. Did you add WrongBook to scene?");
-            }
-
-            // 玩家死亡：Game Over
-            if (playerHp <= 0)
-            {
-                backHomeButton.gameObject.SetActive(true);
-                playerHp = 0;
-                gameOver = true;
-                hintText.text = "Game Over";
-                UpdateHud();
-                return;
-            }
-
-            // 答错：显示正确答案，但不出下一题，等待玩家按 Next
-            string show = (currentAnswers != null && currentAnswers.Length > 0)
-                ? string.Join(" / ", currentAnswers)
-                : "(no answer)";
-
-            hintText.text = "Wrong. Answer: " + show;
-
-            // 进入等待 Next 状态
-            waitingNext = true;
-
-            // 禁止提交与输入
-            submitButton.interactable = false;
-            answerInput.interactable = false;
-
-            // 允许 Next 按钮点击
-            nextButton.interactable = true;
-
-            UpdateHud();
-            return; // 关键：不执行 NextWord()
-        }
+        HandleWrongAnswer();
     }
 
+    private void HandleWrongAnswer()
+    {
+        combo = 0;
+        playerHp = Mathf.Max(0, playerHp - 1);
+        SaveWrongEntry();
 
-    // 出新词：从词库随机取一个并显示到 wordText
+        if (playerHp <= 0)
+        {
+            SetActive(backHomeButton, true);
+            gameOver = true;
+            SetHint("Game Over — press Restart or return Home.");
+            SetInteractable(submitButton, false);
+            SetInteractable(answerInput, false);
+            SetInteractable(nextButton, false);
+            UpdateHud();
+            return;
+        }
+
+        string answer = currentAnswers != null && currentAnswers.Length > 0
+            ? string.Join(" / ", currentAnswers)
+            : "(no answer)";
+
+        SetHint("Wrong. Answer: " + answer);
+        waitingNext = true;
+        SetInteractable(submitButton, false);
+        SetInteractable(answerInput, false);
+        SetInteractable(nextButton, true);
+        UpdateHud();
+    }
+
+    private void SaveWrongEntry()
+    {
+        if (currentEntry != null && WrongBook.Instance != null)
+            WrongBook.Instance.AddOrUpdate(selectedLang, currentEntry.prompt, currentAnswers);
+    }
+
     private void NextWord()
     {
-        currentEntry = wordDb.GetRandomEntryByLang(selectedLang);
+        currentEntry = wordDb != null ? wordDb.GetRandomEntryByLang(selectedLang) : null;
 
         if (currentEntry == null)
         {
             currentAnswers = System.Array.Empty<string>();
-            wordText.text = "(No entries for lang: " + selectedLang + ")";
+            SetText(wordText, "No words for mode: " + selectedLang.ToUpperInvariant());
+            SetHint("Please check words.json or choose another mode.");
             return;
         }
 
-        wordText.text = currentEntry.prompt;
-        currentAnswers = (currentEntry.answers != null) ? currentEntry.answers : System.Array.Empty<string>();
+        SetText(wordText, currentEntry.prompt);
+        currentAnswers = currentEntry.answers ?? System.Array.Empty<string>();
     }
 
-    // 刷新 HUD：把“内存里的状态变量”同步到 UI 文本上
     private void UpdateHud()
     {
-        if (scoreText != null) scoreText.text = "Score: " + score;
-        if (comboText != null) comboText.text = "Combo: " + combo;
-
-        if (enemyHPText != null)
-            enemyHPText.text = $"{currentEnemy.name} HP: {currentEnemy.hp}/{currentEnemy.maxHp}";
-
-        if (playerHpText != null)
-            playerHpText.text = "Player HP: " + playerHp + "/" + playerMaxHp;
-
-        if (killsText != null)
-            killsText.text = "kills : " + kills;
+        SetText(scoreText, "Score  " + score);
+        SetText(comboText, "Combo  x" + combo);
+        SetText(enemyHPText, $"{currentEnemy.name} HP  {currentEnemy.hp}/{currentEnemy.maxHp}");
+        SetText(playerHpText, "Player HP  " + playerHp + "/" + playerMaxHp);
+        SetText(killsText, "Kills  " + kills);
+        UpdateModeLabel();
     }
 
-    // 点击 Restart 按钮时调用：重置本局状态
     private void RestartGame()
     {
         ResetRun();
     }
 
-    // 重置一局：把所有“会变化的状态”恢复到初始值
-    // 这就是一局开始时的“初始状态”
     private void ResetRun()
     {
         selectedLang = PlayerPrefs.GetString("selected_lang", "jp");
-        backHomeButton.gameObject.SetActive(false);
-        UpdateModeLabel();
-
-        Debug.Log("ResetRun selectedLang = " + selectedLang);
-
-        Debug.Log("Before set modeText: " + (modeText ? modeText.text : "modeText is NULL"));
-
-   /*     if (modeText != null)
-        {
-            modeText.text = "MODE >>> " + selectedLang.ToUpper() + " <<<";
-        }
-   */
-        Debug.Log("After set modeText: " + (modeText ? modeText.text : "modeText is NULL"));
-
-
-     //   if (modeText != null)
-     //     modeText.text = (selectedLang == "en") ? "Mode: EN" : "Mode: JP";
-
+        SetActive(backHomeButton, false);
         gameOver = false;
-
-        // 清空进度
+        waitingNext = false;
         score = 0;
         combo = 0;
         kills = 0;
-
-        // 初始化玩家血量
-        playerMaxHp = startPlayerMaxHp;
+        playerMaxHp = Mathf.Max(1, startPlayerMaxHp);
         playerHp = playerMaxHp;
 
-        // 生成第一只敌人
         SpawnEnemy();
-
-        // UI 允许操作（如果上一局 GameOver 禁用了，这里会恢复）
-        submitButton.interactable = true;
-        answerInput.interactable = true;
-
-        // UI 提示文字
-        hintText.text = "Enter Or Submit";
-
-        // 刷新界面 & 出第一题
+        SetInteractable(submitButton, true);
+        SetInteractable(answerInput, true);
+        SetInteractable(nextButton, false);
+        SetHint("Type the answer and press Enter or Submit.");
         UpdateHud();
         NextWord();
-
-        // 清空并聚焦输入框
-        answerInput.text = "";
-        answerInput.ActivateInputField();
-
-        waitingNext = false;
-        nextButton.interactable = false;
-        submitButton.interactable = true;
-        answerInput.interactable = true;
-
+        ClearAndFocusInput();
     }
 
-    // 生成敌人：从模板数组随机抽一个，并根据 kills 给难度加成
     private void SpawnEnemy()
     {
-        // 如果没有配置模板（Inspector 没填），就用默认 Slime
-        if (enemyTemplates == null || enemyTemplates.Length == 0)
+        EnemyTemplate template = PickEnemyTemplate();
+        if (template == null)
         {
             currentEnemy.name = "Slime";
-            currentEnemy.maxHp = startEnemyMaxHp;
+            currentEnemy.maxHp = Mathf.Max(1, startEnemyMaxHp + kills / 2);
             currentEnemy.hp = currentEnemy.maxHp;
             return;
         }
 
-        EnemyTemplate t = null;
+        currentEnemy.name = string.IsNullOrWhiteSpace(template.name) ? "Monster" : template.name;
+        int bonus = template.isBoss ? kills : kills / 2;
+        currentEnemy.maxHp = Mathf.Max(1, template.baseMaxHp + bonus);
+        currentEnemy.hp = currentEnemy.maxHp;
+    }
 
-        // 规则：每 bossEveryKills 次击杀必出 Boss
-        bool shouldSpawnBoss = (bossEveryKills > 0) && (kills > 0) && (kills % bossEveryKills == 0);
+    private EnemyTemplate PickEnemyTemplate()
+    {
+        if (enemyTemplates == null || enemyTemplates.Length == 0)
+            return null;
 
+        bool shouldSpawnBoss = bossEveryKills > 0 && kills > 0 && kills % bossEveryKills == 0;
         if (shouldSpawnBoss)
         {
-            // 从模板里找一个 isBoss == true 的
             for (int i = 0; i < enemyTemplates.Length; i++)
-            {
                 if (enemyTemplates[i] != null && enemyTemplates[i].isBoss)
-                {
-                    t = enemyTemplates[i];
-                    break;
-                }
-            }
+                    return enemyTemplates[i];
         }
 
-        // 如果不该出 Boss 或没找到 Boss 模板，就随机刷一个非 Boss
-        if (t == null)
+        for (int tries = 0; tries < 20; tries++)
         {
-            // 尝试随机找非Boss，最多试 20 次避免死循环
-            for (int tries = 0; tries < 20; tries++)
-            {
-                int idx = UnityEngine.Random.Range(0, enemyTemplates.Length);
-                if (enemyTemplates[idx] != null && !enemyTemplates[idx].isBoss)
-                {
-                    t = enemyTemplates[idx];
-                    break;
-                }
-            }
-
-            // 如果全是Boss（极端情况），那就随便选一个
-            if (t == null)
-                t = enemyTemplates[UnityEngine.Random.Range(0, enemyTemplates.Length)];
+            EnemyTemplate template = enemyTemplates[Random.Range(0, enemyTemplates.Length)];
+            if (template != null && !template.isBoss)
+                return template;
         }
 
+        for (int i = 0; i < enemyTemplates.Length; i++)
+            if (enemyTemplates[i] != null)
+                return enemyTemplates[i];
 
-        // 把模板信息“拷贝”到当前敌人状态里（模板不变，状态会变）
-        currentEnemy.name = t.name;
+        return null;
+    }
 
-        // 难度加成：Boss 增益更大，普通怪增益更小
-        // kills 越多，敌人越强（血越厚）
-        int bonus = t.isBoss ? kills : (kills / 2);
-        currentEnemy.maxHp = t.baseMaxHp + bonus;
-
-        // 当前血量重置为满血
-        currentEnemy.hp = currentEnemy.maxHp;
-    }//生成怪
-
-    private bool CheckHitAny(string input, string[] answers)//检查回答
+    private bool CheckHitAny(string input, string[] answers)
     {
         if (string.IsNullOrWhiteSpace(input) || answers == null || answers.Length == 0)
             return false;
 
         string typed = input.Trim();
-        for(int i = 0; i < answers.Length; i++)
+        for (int i = 0; i < answers.Length; i++)
         {
-            if (string.IsNullOrWhiteSpace(answers[i]))
-                continue;
-            if (string.Equals(typed, answers[i].Trim(), System.StringComparison.OrdinalIgnoreCase))
+            if (!string.IsNullOrWhiteSpace(answers[i]) && string.Equals(typed, answers[i].Trim(), System.StringComparison.OrdinalIgnoreCase))
                 return true;
         }
+
         return false;
     }
 
@@ -357,32 +241,63 @@ public class GameManager : MonoBehaviour
             return;
 
         waitingNext = false;
-
-        submitButton.interactable = true;
-        answerInput.interactable = true;
-
-        nextButton.interactable = false;
-
-        // 清提示（你也可以保留上一条提示）
-        hintText.text = "Enter Or Submit";
-
-        // 清空输入框，出下一题
-        answerInput.text = "";
-        NextWord(); // 你目前函数名叫 NextWord，但它实际上是 NextQuestion 出题
+        SetInteractable(submitButton, true);
+        SetInteractable(answerInput, true);
+        SetInteractable(nextButton, false);
+        SetHint("Type the next answer.");
+        ClearAndFocusInput();
+        NextWord();
         UpdateHud();
-
-        // 重新聚焦输入框
-        answerInput.ActivateInputField();
     }
 
     private void UpdateModeLabel()
     {
-        if (modeText == null) return;
-        modeText.text = (selectedLang == "en") ? "Mode: EN" : "Mode: JP";
+        SetText(modeText, selectedLang == "en" ? "Mode  English" : "Mode  Japanese");
     }
 
     private void BackToHome()
     {
-        UnityEngine.SceneManagement.SceneManager.LoadScene("Home");
+        SceneManager.LoadScene("Home");
+    }
+
+    private void ClearAndFocusInput()
+    {
+        if (answerInput == null)
+            return;
+
+        answerInput.text = string.Empty;
+        answerInput.ActivateInputField();
+    }
+
+    private void SetHint(string message)
+    {
+        SetText(hintText, message);
+    }
+
+    private static void AddListener(Button button, UnityEngine.Events.UnityAction action)
+    {
+        if (button == null)
+            return;
+
+        button.onClick.RemoveListener(action);
+        button.onClick.AddListener(action);
+    }
+
+    private static void SetText(TMP_Text text, string value)
+    {
+        if (text != null)
+            text.text = value;
+    }
+
+    private static void SetInteractable(Selectable selectable, bool interactable)
+    {
+        if (selectable != null)
+            selectable.interactable = interactable;
+    }
+
+    private static void SetActive(Button button, bool active)
+    {
+        if (button != null)
+            button.gameObject.SetActive(active);
     }
 }

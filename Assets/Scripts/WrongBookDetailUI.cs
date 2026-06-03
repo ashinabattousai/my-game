@@ -12,12 +12,14 @@ public class WrongBookDetailUI : MonoBehaviour
 
     private string id;
 
-    void Start()
+    private void Start()
     {
-        id = PlayerPrefs.GetString("wrong_selected_id", "");
+        id = PlayerPrefs.GetString("wrong_selected_id", string.Empty);
 
-        if (backButton) backButton.onClick.AddListener(() => SceneManager.LoadScene("WrongBook"));
-        if (masteredButton) masteredButton.onClick.AddListener(MarkMastered);
+        if (backButton != null)
+            backButton.onClick.AddListener(() => SceneManager.LoadScene("WrongBook"));
+        if (masteredButton != null)
+            masteredButton.onClick.AddListener(MarkMastered);
 
         Refresh();
     }
@@ -26,24 +28,24 @@ public class WrongBookDetailUI : MonoBehaviour
     {
         if (WrongBook.Instance == null)
         {
-            promptText.text = "WrongBook.Instance is NULL";
-            answersText.text = "";
+            SetText(promptText, "Wrong book data is not available.");
+            SetText(answersText, string.Empty);
             return;
         }
 
         var list = WrongBook.Instance.GetAll();
         for (int i = 0; i < list.Count; i++)
         {
-            if (list[i].id == id)
-            {
-                promptText.text = $"[{list[i].lang}] {list[i].prompt}";
-                answersText.text = (list[i].answers != null) ? string.Join("\n", list[i].answers) : "";
-                return;
-            }
+            if (list[i].id != id)
+                continue;
+
+            SetText(promptText, $"[{list[i].lang}] {list[i].prompt}");
+            SetText(answersText, list[i].answers != null ? string.Join("\n", list[i].answers) : string.Empty);
+            return;
         }
 
-        promptText.text = "Not found: " + id;
-        answersText.text = "";
+        SetText(promptText, "This wrong-book item was not found.");
+        SetText(answersText, string.Empty);
     }
 
     private void MarkMastered()
@@ -52,5 +54,11 @@ public class WrongBookDetailUI : MonoBehaviour
             WrongBook.Instance.RemoveById(id);
 
         SceneManager.LoadScene("WrongBook");
+    }
+
+    private static void SetText(TMP_Text text, string value)
+    {
+        if (text != null)
+            text.text = value;
     }
 }

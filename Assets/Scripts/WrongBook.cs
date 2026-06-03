@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public class WrongBooksave
+public class WrongBookSave
 {
     public List<WrongEntry> items = new List<WrongEntry>();
 }
@@ -13,18 +13,18 @@ public class WrongBook : MonoBehaviour
     public static WrongBook Instance { get; private set; }
 
     private const string SaveKey = "wrong_book_json";
-    private WrongBooksave data = new WrongBooksave();
+    private WrongBookSave data = new WrongBookSave();
 
     private void Awake()
     {
-        if(Instance != null && Instance != this)
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
+
         Instance = this;
         DontDestroyOnLoad(gameObject);
-
         Load();
     }
 
@@ -35,17 +35,12 @@ public class WrongBook : MonoBehaviour
 
     public void AddOrUpdate(string lang, string prompt, string[] answers)
     {
-        // 生成一个稳定 id：lang + prompt
         string id = (lang + "|" + prompt).Trim();
-
-        // 去重：如果已经存在，就不重复添加
         for (int i = 0; i < data.items.Count; i++)
-        {
             if (data.items[i].id == id)
                 return;
-        }
 
-        var e = new WrongEntry
+        WrongEntry entry = new WrongEntry
         {
             id = id,
             lang = lang,
@@ -54,7 +49,7 @@ public class WrongBook : MonoBehaviour
             createdAtUnix = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
         };
 
-        data.items.Add(e);
+        data.items.Add(entry);
         Save();
     }
 
@@ -62,13 +57,14 @@ public class WrongBook : MonoBehaviour
     {
         for (int i = 0; i < data.items.Count; i++)
         {
-            if (data.items[i].id == id)
-            {
-                data.items.RemoveAt(i);
-                Save();
-                return true;
-            }
+            if (data.items[i].id != id)
+                continue;
+
+            data.items.RemoveAt(i);
+            Save();
+            return true;
         }
+
         return false;
     }
 
@@ -87,22 +83,22 @@ public class WrongBook : MonoBehaviour
 
     private void Load()
     {
-        string json = PlayerPrefs.GetString(SaveKey, "");
-        if(string.IsNullOrWhiteSpace(json))
+        string json = PlayerPrefs.GetString(SaveKey, string.Empty);
+        if (string.IsNullOrWhiteSpace(json))
         {
-            data = new WrongBooksave();
+            data = new WrongBookSave();
             return;
         }
 
         try
         {
-            data = JsonUtility.FromJson<WrongBooksave>(json);
+            data = JsonUtility.FromJson<WrongBookSave>(json);
             if (data == null || data.items == null)
-                data = new WrongBooksave();
+                data = new WrongBookSave();
         }
         catch
         {
-            data = new WrongBooksave();
+            data = new WrongBookSave();
         }
     }
 }

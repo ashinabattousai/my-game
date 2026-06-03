@@ -7,9 +7,11 @@ public class HomeUI : MonoBehaviour
     [SerializeField] private Button startButton;
     [SerializeField] private Button wrongBookButton;
 
-    void Start()
+    private void Start()
     {
-        if (startButton) startButton.onClick.AddListener(() => SceneManager.LoadScene("ModeSelect"));
-        if (wrongBookButton) wrongBookButton.onClick.AddListener(() => SceneManager.LoadScene("WrongBook"));
+        if (startButton != null)
+            startButton.onClick.AddListener(() => SceneManager.LoadScene("ModeSelect"));
+        if (wrongBookButton != null)
+            wrongBookButton.onClick.AddListener(() => SceneManager.LoadScene("WrongBook"));
     }
 }
