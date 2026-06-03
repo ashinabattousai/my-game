@@ -6,15 +6,9 @@ public class WrongBookSceneUI : MonoBehaviour
 {
     [SerializeField] private Button backButton;
 
-    void Start()
+    private void Start()
     {
-        backButton.onClick.AddListener(Back);
+        if (backButton != null)
+            backButton.onClick.AddListener(() => SceneManager.LoadScene("Home"));
     }
-
-    private void Back()
-    {
-        SceneManager.LoadScene("Home");
-    }
-
-
 }
