@@ -147,7 +147,7 @@ public static class RuntimeUI
         uiFontAsset.name = "Runtime CJK TMP Font";
         uiFontAsset.atlasPopulationMode = AtlasPopulationMode.Dynamic;
         uiFontAsset.isMultiAtlasTexturesEnabled = true;
-        uiFontAsset.TryAddCharacters("单词战斗训练开始冒险继续进度游玩说明错题本答对攻击敌人连击越高奖励越多选择模式日语英语返回主页返回首页清空还没有这里自动记录详情掌握已未找到可能已经被删除错误次数提交下一题重开新路线输入答案后按准备中答案胜利失败生命分数击败普通精英休息首领路线完成生成新路线恢复节点关卡地图难度通关图书馆老师朋友勇气樱花苹果月亮星星学校谢谢早上好敌影看提示先回忆再输入根据中文回忆英文拼写日语读法新词需复习较熟学习中正确写法首字母长度看过答案后命中标为权重");
+        uiFontAsset.TryAddCharacters("单词战斗训练开始冒险继续进度游玩说明错题本答对攻击敌人连击越高奖励越多选择模式日语英语返回主页返回首页清空还没有这里自动记录详情掌握已未找到可能已经被删除错误次数提交下一题重开新路线输入答案后按准备中答案胜利失败生命分数击败普通精英休息首领路线完成生成新路线恢复节点关卡地图难度通关图书馆老师朋友勇气樱花苹果月亮星星学校谢谢早上好敌影看提示先回忆再输入根据中文回忆英文拼写日语读法新词需复习较熟学习中正确写法首字母长度看过答案后命中标为权重金币经验等级遗物商店事件宝箱复习沙漏护身符连击剑复习之书钱袋凤羽购买治疗古书试炼错写");
         return uiFontAsset;
     }
 

@@ -5,6 +5,10 @@ public enum MapNodeType
     Monster,
     Elite,
     Rest,
+    Shop,
+    Event,
+    Chest,
+    Review,
     Boss
 }
 
@@ -27,7 +31,11 @@ public class RunProgress
     public int score;
     public int combo;
     public int kills;
+    public int gold;
+    public int xp;
+    public int level;
     public int playerMaxHp;
     public int playerHp;
     public string completedCsv;
+    public string relicCsv;
 }
