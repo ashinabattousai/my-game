@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -6,15 +6,12 @@ public class WrongBookSceneUI : MonoBehaviour
 {
     [SerializeField] private Button backButton;
 
-    void Start()
+    private void Start()
     {
-        backButton.onClick.AddListener(Back);
+        if (FindObjectOfType<WrongBookListUI>() == null)
+            gameObject.AddComponent<WrongBookListUI>();
+
+        if (backButton)
+            backButton.onClick.AddListener(() => SceneManager.LoadScene("Home"));
     }
-
-    private void Back()
-    {
-        SceneManager.LoadScene("Home");
-    }
-
-
 }

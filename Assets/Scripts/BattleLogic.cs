@@ -5,6 +5,6 @@ public class BattleLogic
         if (string.IsNullOrWhiteSpace(input) || string.IsNullOrWhiteSpace(target))
             return false;
 
-        return input.Trim() == target.Trim();
+        return string.Equals(input.Trim(), target.Trim(), System.StringComparison.OrdinalIgnoreCase);
     }
 }

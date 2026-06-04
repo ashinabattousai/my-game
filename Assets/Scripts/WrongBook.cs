@@ -1,4 +1,4 @@
-using System;
+锘縰sing System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,14 +17,14 @@ public class WrongBook : MonoBehaviour
 
     private void Awake()
     {
-        if(Instance != null && Instance != this)
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
+
         Instance = this;
         DontDestroyOnLoad(gameObject);
-
         Load();
     }
 
@@ -33,28 +33,44 @@ public class WrongBook : MonoBehaviour
         return data.items;
     }
 
-    public void AddOrUpdate(string lang, string prompt, string[] answers)
+    public WrongEntry GetById(string id)
     {
-        // 生成一个稳定 id：lang + prompt
-        string id = (lang + "|" + prompt).Trim();
-
-        // 去重：如果已经存在，就不重复添加
         for (int i = 0; i < data.items.Count; i++)
         {
             if (data.items[i].id == id)
-                return;
+                return data.items[i];
+        }
+        return null;
+    }
+
+    public void AddOrUpdate(string lang, string prompt, string[] answers)
+    {
+        string id = (lang + "|" + prompt).Trim();
+        long now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
+        for (int i = 0; i < data.items.Count; i++)
+        {
+            WrongEntry existing = data.items[i];
+            if (existing.id != id)
+                continue;
+
+            existing.answers = answers ?? Array.Empty<string>();
+            existing.lastMissedUnix = now;
+            existing.timesWrong = Mathf.Max(1, existing.timesWrong + 1);
+            Save();
+            return;
         }
 
-        var e = new WrongEntry
+        data.items.Add(new WrongEntry
         {
             id = id,
             lang = lang,
             prompt = prompt,
             answers = answers ?? Array.Empty<string>(),
-            createdAtUnix = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
-        };
-
-        data.items.Add(e);
+            createdAtUnix = now,
+            lastMissedUnix = now,
+            timesWrong = 1
+        });
         Save();
     }
 
@@ -88,7 +104,7 @@ public class WrongBook : MonoBehaviour
     private void Load()
     {
         string json = PlayerPrefs.GetString(SaveKey, "");
-        if(string.IsNullOrWhiteSpace(json))
+        if (string.IsNullOrWhiteSpace(json))
         {
             data = new WrongBooksave();
             return;
