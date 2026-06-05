@@ -8,6 +8,7 @@ public class EnemyTemplate
     public bool isBoss;
     public string artResource;
     public string faction;
+    public string ruleType;
     public int minKills;
     public int tier;
 }

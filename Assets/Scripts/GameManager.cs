@@ -34,9 +34,10 @@ public class GameManager : MonoBehaviour
     [Header("Config")]
     [SerializeField] private int startPlayerMaxHp = 5;
     [SerializeField] private int baseScorePerHit = 10;
-    [SerializeField] private float questionTimeLimit = 18f;
+    [SerializeField] private float questionTimeLimit = 60f;
+    [SerializeField] private float wrongAnswerReviewDelay = 2.8f;
     [SerializeField] private bool useRuntimeUi = true;
-    [SerializeField] private int mapDepthCount = 8;
+    [SerializeField] private int mapDepthCount = 12;
     [SerializeField] private int mapRows = 3;
 
     private readonly BattleLogic logic = new BattleLogic();
@@ -51,6 +52,9 @@ public class GameManager : MonoBehaviour
     private int gold;
     private int xp;
     private int level = 1;
+    private int hintCharges = 2;
+    private int nextBattleTimeBonus;
+    private int nextBattleTimePenalty;
     private int damageToEnemy = 1;
     private int currentSeed;
     private bool gameOver;
@@ -60,7 +64,12 @@ public class GameManager : MonoBehaviour
     private bool firstMissBlockedThisBattle;
     private bool phoenixLeafUsed;
     private bool reviewBattle;
+    private bool eventReviewGamble;
+    private bool repeaterPending;
+    private bool glassSwordBroken;
     private string activeReviewWrongId;
+    private string activeEnemyRule = "normal";
+    private int questionIndexInBattle;
     private float timeLeft;
     private float currentQuestionLimit;
     private float nextQuestionTimePenalty;
@@ -78,6 +87,9 @@ public class GameManager : MonoBehaviour
     private Button revealButton;
     private RectTransform enemyPanelRect;
     private RectTransform questionPanelRect;
+    private RectTransform canvasRect;
+    private Image transitionImage;
+    private Coroutine enemyIdleRoutine;
     private float enemyHpTarget = 1f;
     private float playerHpTarget = 1f;
     private float timerTarget = 1f;
@@ -85,6 +97,8 @@ public class GameManager : MonoBehaviour
     private GameObject mapRoot;
     private GameObject choiceRoot;
     private Transform choiceContent;
+    private TMP_Text choiceTitleText;
+    private TMP_Text choiceTipText;
     private Transform mapContent;
     private TMP_Text mapTitleText;
     private TMP_Text mapStatusText;
@@ -133,6 +147,7 @@ public class GameManager : MonoBehaviour
     private void BuildRuntimeUi()
     {
         Canvas canvas = RuntimeUI.CreateCanvas("Runtime Battle Canvas");
+        canvasRect = canvas.GetComponent<RectTransform>();
         RuntimeUI.Background(canvas.transform, RuntimeUI.LoadTexture("Art/library_battle_bg"));
         RuntimeUI.Panel(canvas.transform, "Dark Wash", new Color(0.01f, 0.02f, 0.04f, 0.62f), Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero).raycastTarget = false;
 
@@ -160,6 +175,7 @@ public class GameManager : MonoBehaviour
         RuntimeUI.Layout(enemyHpFill.transform.parent.gameObject, 22, 30);
 
         Image card = RuntimeUI.Panel(canvas.transform, "Study Card", new Color(0.965f, 0.91f, 0.76f, 0.94f), new Vector2(0.425f, 0.12f), new Vector2(0.945f, 0.84f), Vector2.zero, Vector2.zero);
+        card.gameObject.AddComponent<DraggablePanel>();
         questionPanelRect = card.GetComponent<RectTransform>();
         RuntimeUI.AddVerticalLayout(card.gameObject, 34, 14);
 
@@ -191,6 +207,10 @@ public class GameManager : MonoBehaviour
         revealButton = RuntimeUI.Button(studyButtons.transform, "Reveal", "看答案", RuntimeUI.Hex("8A6A3E"), Color.white);
         submitButton = RuntimeUI.Button(studyButtons.transform, "Submit", "提交", RuntimeUI.Teal, Color.white);
 
+        AddTooltip(hintButton, "消耗一次提示，显示答案线索。");
+        AddTooltip(revealButton, "直接看正确写法，但本题会标为需复习。");
+        AddTooltip(submitButton, "提交答案。连击和答题速度会影响伤害。");
+
         GameObject runButtons = new GameObject("Run Buttons", typeof(RectTransform));
         runButtons.transform.SetParent(card.transform, false);
         RuntimeUI.AddHorizontalLayout(runButtons, 0, 12);
@@ -199,12 +219,56 @@ public class GameManager : MonoBehaviour
         restartButton = RuntimeUI.Button(runButtons.transform, "Restart", "新路线", RuntimeUI.Coral, Color.white);
         backHomeButton = RuntimeUI.Button(runButtons.transform, "Home", "退出", RuntimeUI.Hex("2E394B"), Color.white);
 
+        AddTooltip(nextButton, "查看完答案后进入下一题。");
+        AddTooltip(restartButton, "放弃当前路线并生成更长的新路线。");
+        AddTooltip(backHomeButton, "退出到首页，当前进度会保留。");
+
         Image bottom = RuntimeUI.Panel(canvas.transform, "Player HP Bar", new Color(0f, 0f, 0f, 0f), new Vector2(0.425f, 0.07f), new Vector2(0.945f, 0.095f), Vector2.zero, Vector2.zero);
         playerHpFill = CreateBar(bottom.transform, RuntimeUI.Gold, RuntimeUI.Hex("3B3020"));
         RuntimeUI.SetRect(playerHpFill.transform.parent, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
 
         BuildMapOverlay(canvas.transform);
         BuildChoiceOverlay(canvas.transform);
+        BuildTransitionOverlay(canvas.transform);
+    }
+
+    private void AddTooltip(Button button, string text)
+    {
+        if (button == null)
+            return;
+
+        TooltipTrigger trigger = button.gameObject.GetComponent<TooltipTrigger>();
+        if (trigger == null)
+            trigger = button.gameObject.AddComponent<TooltipTrigger>();
+        trigger.Text = text;
+    }
+
+    private void BuildTransitionOverlay(Transform parent)
+    {
+        transitionImage = RuntimeUI.Panel(parent, "Transition Overlay", Color.black, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+        transitionImage.raycastTarget = false;
+        transitionImage.color = new Color(0f, 0f, 0f, 0f);
+        transitionImage.gameObject.SetActive(false);
+    }
+
+    private IEnumerator TransitionFlash()
+    {
+        if (transitionImage == null)
+            yield break;
+
+        transitionImage.gameObject.SetActive(true);
+        float duration = 0.28f;
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            float t = elapsed / duration;
+            float alpha = t < 0.45f ? Mathf.Lerp(0f, 0.45f, t / 0.45f) : Mathf.Lerp(0.45f, 0f, (t - 0.45f) / 0.55f);
+            transitionImage.color = new Color(0f, 0f, 0f, alpha);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        transitionImage.color = new Color(0f, 0f, 0f, 0f);
+        transitionImage.gameObject.SetActive(false);
     }
 
     private void BuildMapOverlay(Transform parent)
@@ -239,10 +303,10 @@ public class GameManager : MonoBehaviour
 
         Image panel = RuntimeUI.Panel(root.transform, "Choice Panel", new Color(0.965f, 0.91f, 0.76f, 0.96f), new Vector2(0.18f, 0.22f), new Vector2(0.82f, 0.80f), Vector2.zero, Vector2.zero);
         RuntimeUI.AddVerticalLayout(panel.gameObject, 34, 18);
-        TMP_Text title = RuntimeUI.Text(panel.transform, "Choice Title", "选择奖励", 54, RuntimeUI.Ink, TextAlignmentOptions.Center);
-        RuntimeUI.Layout(title.gameObject, 72, 88);
-        TMP_Text tip = RuntimeUI.Text(panel.transform, "Choice Tip", "选择一个效果加入本轮冒险。", 26, RuntimeUI.Hex("6C5632"), TextAlignmentOptions.Center);
-        RuntimeUI.Layout(tip.gameObject, 42, 54);
+        choiceTitleText = RuntimeUI.Text(panel.transform, "Choice Title", "选择奖励", 54, RuntimeUI.Ink, TextAlignmentOptions.Center);
+        RuntimeUI.Layout(choiceTitleText.gameObject, 72, 88);
+        choiceTipText = RuntimeUI.Text(panel.transform, "Choice Tip", "选择一个效果加入本轮冒险。", 26, RuntimeUI.Hex("6C5632"), TextAlignmentOptions.Center);
+        RuntimeUI.Layout(choiceTipText.gameObject, 42, 54);
 
         GameObject row = new GameObject("Choice Row", typeof(RectTransform));
         row.transform.SetParent(panel.transform, false);
@@ -259,6 +323,8 @@ public class GameManager : MonoBehaviour
             return;
 
         choiceRoot.SetActive(true);
+        if (choiceTitleText) choiceTitleText.text = "选择遗物";
+        if (choiceTipText) choiceTipText.text = "选择一个效果加入本轮构筑。";
         ClearChoiceButtons();
         RelicDef[] options = RollRelicOptions(3);
         for (int i = 0; i < options.Length; i++)
@@ -301,7 +367,10 @@ public class GameManager : MonoBehaviour
     private void PickRelic(RelicDef relic, string reason)
     {
         if (relic != null)
+        {
             relics.Add(relic.id);
+            LongTermProgress.RecordRelic(relic.id);
+        }
 
         if (choiceRoot)
             choiceRoot.SetActive(false);
@@ -355,6 +424,9 @@ public class GameManager : MonoBehaviour
         gold = 0;
         xp = 0;
         level = 1;
+        hintCharges = 2;
+        nextBattleTimeBonus = 0;
+        nextBattleTimePenalty = 0;
         playerMaxHp = startPlayerMaxHp;
         playerHp = playerMaxHp;
         activeNode = null;
@@ -383,6 +455,7 @@ public class GameManager : MonoBehaviour
         activeNode = node;
         waitingNext = false;
         gameOver = false;
+        StartCoroutine(TransitionFlash());
         if (answerInput) answerInput.text = "";
         if (nextButton) nextButton.interactable = false;
 
@@ -436,6 +509,7 @@ public class GameManager : MonoBehaviour
             }
 
             reviewBattle = true;
+            eventReviewGamble = false;
             activeReviewWrongId = review.id;
             if (mapRoot) mapRoot.SetActive(false);
             SetPlayInteractable(true);
@@ -444,8 +518,9 @@ public class GameManager : MonoBehaviour
             currentEnemy.hp = 1;
             currentEntry = new Entry { lang = review.lang, prompt = review.prompt, answers = review.answers, difficulty = 1 };
             currentAnswers = review.answers ?? System.Array.Empty<string>();
-            currentQuestionLimit = questionTimeLimit + RelicTimeBonus();
+            currentQuestionLimit = Mathf.Clamp(questionTimeLimit + RelicTimeBonus(), 10f, 60f);
             timeLeft = currentQuestionLimit;
+            RuntimeUI.RegisterTextCharacters(currentEntry.prompt);
             wordText.text = currentEntry.prompt;
             masteryText.text = "错题挑战";
             difficultyText.text = "连续答对 2 次后移出错题本";
@@ -459,6 +534,7 @@ public class GameManager : MonoBehaviour
         if (mapRoot) mapRoot.SetActive(false);
         SetPlayInteractable(true);
         reviewBattle = false;
+        eventReviewGamble = false;
         activeReviewWrongId = "";
         SpawnEnemy();
         NextWord();
@@ -485,61 +561,184 @@ public class GameManager : MonoBehaviour
 
     private void ResolveShopNode()
     {
-        string result;
-        if (gold >= 45 && playerHp < playerMaxHp)
-        {
-            gold -= 45;
-            playerHp = Mathf.Min(playerMaxHp, playerHp + 2);
-            result = "商店购买治疗，金币 -45，生命 +2。";
-        }
-        else if (gold >= 60)
-        {
-            gold -= 60;
-            CompleteActiveNode();
-            UpdateHud();
-            SaveProgress();
-            ShowRelicChoice("商店购买遗物，金币 -60。");
-            return;
-        }
-        else
-        {
-            gold += 10;
-            result = "金币不足，商人赠送路费 +10。";
-        }
-
-        CompleteActiveNode();
-        UpdateHud();
-        SaveProgress();
-        ShowMap(result);
+        ShowShopChoice();
     }
 
     private void ResolveEventNode()
     {
-        int roll = UnityEngine.Random.Range(0, 3);
-        string result;
-        if (roll == 0)
-        {
-            gold += 30;
-            GainXp(15);
-            result = "事件: 学习 3 个新词，金币 +30，经验 +15。";
-        }
-        else if (roll == 1)
-        {
-            nextQuestionTimePenalty = 5f;
-            gold += 55;
-            result = "事件: 接受限时挑战，下一题时间 -5 秒，金币 +55。";
-        }
-        else
-        {
-            playerHp = Mathf.Max(1, playerHp - 1);
-            GainXp(35);
-            result = "事件: 古书试炼，生命 -1，经验 +35。";
-        }
+        ShowEventChoice();
+    }
 
+    private void ShowShopChoice()
+    {
+        if (choiceRoot == null || choiceContent == null)
+            return;
+
+        choiceRoot.SetActive(true);
+        if (choiceTitleText) choiceTitleText.text = "商店";
+        if (choiceTipText) choiceTipText.text = "金币有限，选择最适合当前路线的补给。";
+        ClearChoiceButtons();
+        AddChoiceButton("治疗\n45 金币 / 生命 +2", RuntimeUI.Teal, BuyShopHeal);
+        AddChoiceButton("随机遗物\n60 金币", RuntimeUI.Hex("8A6A3E"), BuyShopRelic);
+        AddChoiceButton("删除错题\n30 金币", RuntimeUI.Gold, BuyShopRemoveWrong);
+        AddChoiceButton("下战加时\n25 金币 / +5 秒", RuntimeUI.Hex("65748A"), BuyShopTime);
+        AddChoiceButton("补充提示\n20 金币 / +2 次", RuntimeUI.Hex("5D8DA8"), BuyShopHints);
+        AddChoiceButton("离开", RuntimeUI.Hex("2E394B"), LeaveShop);
+    }
+
+    private void ShowEventChoice()
+    {
+        if (choiceRoot == null || choiceContent == null)
+            return;
+
+        choiceRoot.SetActive(true);
+        if (choiceTitleText) choiceTitleText.text = "事件";
+        if (choiceTipText) choiceTipText.text = "选择风险和收益，结果由你承担。";
+        ClearChoiceButtons();
+        AddChoiceButton("古书试炼\n生命 -1 / 经验 +70", RuntimeUI.Hex("7B68A6"), EventStudyTrial);
+        AddChoiceButton("时间交易\n下战 -5 秒 / 金币 +80", RuntimeUI.Coral, EventTimeTrade);
+        AddChoiceButton("错题赌局\n成功得遗物 / 失败扣血", RuntimeUI.Hex("5D8DA8"), EventReviewGamble);
+        AddChoiceButton("安全离开\n金币 +10", RuntimeUI.Hex("2E394B"), EventLeave);
+    }
+
+    private void AddChoiceButton(string label, Color color, UnityEngine.Events.UnityAction action)
+    {
+        Button button = RuntimeUI.Button(choiceContent, "Choice", label, color, Color.white);
+        RuntimeUI.Layout(button.gameObject, 170, 220, 1);
+        button.onClick.AddListener(action);
+    }
+
+    private void BuyShopHeal()
+    {
+        if (!TrySpendGold(45, "金币不足，无法治疗。"))
+            return;
+        playerHp = Mathf.Min(playerMaxHp, playerHp + 2);
+        CompleteShopNode("购买治疗，生命 +2。");
+    }
+
+    private void BuyShopRelic()
+    {
+        if (!TrySpendGold(60, "金币不足，无法购买遗物。"))
+            return;
         CompleteActiveNode();
         UpdateHud();
         SaveProgress();
-        ShowMap(result);
+        if (choiceRoot) choiceRoot.SetActive(false);
+        ShowRelicChoice("商店购买遗物。");
+    }
+
+    private void BuyShopRemoveWrong()
+    {
+        if (!TrySpendGold(30, "金币不足，无法删除错题。"))
+            return;
+
+        WrongEntry wrong = WrongBook.Instance != null ? WrongBook.Instance.GetRandomForLang(selectedLang) : null;
+        if (wrong != null)
+            WrongBook.Instance.RemoveById(wrong.id);
+        CompleteShopNode(wrong != null ? "删除一条错题记录。" : "没有错题可删，金币已支付给商人。");
+    }
+
+    private void BuyShopTime()
+    {
+        if (!TrySpendGold(25, "金币不足，无法购买加时。"))
+            return;
+        nextBattleTimeBonus += 5;
+        CompleteShopNode("下一场战斗答题时间 +5 秒。");
+    }
+
+    private void BuyShopHints()
+    {
+        if (!TrySpendGold(20, "金币不足，无法购买提示。"))
+            return;
+        hintCharges += 2;
+        CompleteShopNode("补充提示 +2。");
+    }
+
+    private void LeaveShop()
+    {
+        CompleteShopNode("离开商店。");
+    }
+
+    private void CompleteShopNode(string message)
+    {
+        if (choiceRoot) choiceRoot.SetActive(false);
+        CompleteActiveNode();
+        UpdateHud();
+        SaveProgress();
+        ShowMap(message);
+    }
+
+    private bool TrySpendGold(int cost, string failMessage)
+    {
+        if (gold >= cost)
+        {
+            gold -= cost;
+            return true;
+        }
+        if (mapStatusText) mapStatusText.text = failMessage;
+        return false;
+    }
+
+    private void EventStudyTrial()
+    {
+        playerHp = Mathf.Max(1, playerHp - 1);
+        GainXp(70);
+        CompleteEventNode("古书试炼完成，生命 -1，经验 +70。");
+    }
+
+    private void EventTimeTrade()
+    {
+        nextBattleTimePenalty += 5;
+        gold += 80;
+        CompleteEventNode("时间交易完成，下一战时间 -5 秒，金币 +80。");
+    }
+
+    private void EventReviewGamble()
+    {
+        WrongEntry wrong = WrongBook.Instance != null ? WrongBook.Instance.GetRandomForLang(selectedLang) : null;
+        if (wrong == null)
+        {
+            gold += 25;
+            CompleteEventNode("没有错题可挑战，获得金币 +25。");
+            return;
+        }
+
+        if (choiceRoot) choiceRoot.SetActive(false);
+        reviewBattle = true;
+        eventReviewGamble = true;
+        activeReviewWrongId = wrong.id;
+        if (mapRoot) mapRoot.SetActive(false);
+        SetPlayInteractable(true);
+        SpawnEnemy();
+        currentEnemy.maxHp = 1;
+        currentEnemy.hp = 1;
+        currentEntry = new Entry { lang = wrong.lang, prompt = wrong.prompt, answers = wrong.answers, difficulty = 1 };
+        currentAnswers = wrong.answers ?? System.Array.Empty<string>();
+        currentQuestionLimit = Mathf.Clamp(questionTimeLimit + RelicTimeBonus(), 10f, 60f);
+        timeLeft = currentQuestionLimit;
+        RuntimeUI.RegisterTextCharacters(currentEntry.prompt);
+        wordText.text = currentEntry.prompt;
+        masteryText.text = "事件错题赌局";
+        difficultyText.text = "成功获得遗物，失败扣 1 生命";
+        hintText.text = string.IsNullOrWhiteSpace(wrong.lastWrongAnswer) ? "挑战一条错题。" : "上次错写: " + wrong.lastWrongAnswer;
+        answerPreviewText.text = "";
+        UpdateHud();
+        if (answerInput) answerInput.ActivateInputField();
+    }
+
+    private void EventLeave()
+    {
+        gold += 10;
+        CompleteEventNode("谨慎离开，金币 +10。");
+    }
+
+    private void CompleteEventNode(string message)
+    {
+        if (choiceRoot) choiceRoot.SetActive(false);
+        CompleteActiveNode();
+        UpdateHud();
+        SaveProgress();
+        ShowMap(message);
     }
 
     private void GainXp(int amount)
@@ -561,7 +760,13 @@ public class GameManager : MonoBehaviour
 
     private float RelicTimeBonus()
     {
-        return HasRelic("hourglass") ? 3f : 0f;
+        float bonus = 0f;
+        if (HasRelic("hourglass"))
+            bonus += 3f;
+        if (HasRelic("time_bond"))
+            bonus += 8f;
+        bonus += nextBattleTimeBonus;
+        return bonus;
     }
 
     private string RelicSummary()
@@ -583,7 +788,13 @@ public class GameManager : MonoBehaviour
     {
         hintText.text = result.message + "，再试一次";
         answerPreviewText.text = "接近正确，不扣生命";
+        SpawnFloatingText(questionPanelRect, "NEAR", RuntimeUI.Gold, 42);
         timeLeft = Mathf.Max(3f, timeLeft - 1.5f);
+        if (CurrentRule() == "trickster")
+        {
+            timeLeft = Mathf.Max(2f, timeLeft - 3f);
+            hintText.text += "，诡术惩罚时间";
+        }
         StartCoroutine(Shake(questionPanelRect, 8f, 0.12f));
         UpdateTimerBar();
         if (answerInput)
@@ -596,6 +807,12 @@ public class GameManager : MonoBehaviour
     private void ResolveHit()
     {
         WordProgressStore.Record(selectedLang, currentEntry.prompt, true);
+        LongTermProgress.RecordCorrect();
+        if (LongTermProgress.TryClaimDailyReward(out string dailyMessage))
+        {
+            gold += 80;
+            SpawnFloatingText(questionPanelRect, dailyMessage + " +80 金币", RuntimeUI.Gold, 34);
+        }
         string answer = FormatCurrentAnswers();
         combo++;
         string speedLabel;
@@ -605,8 +822,14 @@ public class GameManager : MonoBehaviour
         currentEnemy.hp -= damage;
         hintText.text = speedLabel + "  " + comboLabel;
         answerPreviewText.text = "正确写法: " + answer + " / 伤害 " + damage;
+        SpawnFloatingText(enemyPanelRect, "-" + damage, damage >= 5 ? RuntimeUI.Gold : RuntimeUI.Coral, damage >= 5 ? 58 : 46);
+        if (damage >= 5)
+            SpawnFloatingText(questionPanelRect, "CRITICAL", RuntimeUI.Gold, 46);
+        SpawnParticleBurst(enemyPanelRect, damage >= 5 ? RuntimeUI.Gold : RuntimeUI.Coral, damage >= 5 ? 18 : 10);
         StartCoroutine(PulseEnemy(damage >= 5 ? RuntimeUI.Gold : new Color(1f, 0.78f, 0.70f, 1f)));
         StartCoroutine(Shake(enemyPanelRect, damage >= 5 ? 24f : 14f, damage >= 5 ? 0.22f : 0.15f));
+        if (damage >= 5)
+            StartCoroutine(ScreenShake(9f, 0.16f));
         FinishHitIfEnemyDefeated();
         if (activeNode != null && mapRoot != null && !mapRoot.activeSelf)
             answerPreviewText.text = "上一题: " + answer + " / 伤害 " + damage;
@@ -666,6 +889,39 @@ public class GameManager : MonoBehaviour
             comboLabel += " + 复习之书";
         }
 
+        if (HasRelic("wrong_crown") && (reviewBattle || WordProgressStore.Label(selectedLang, currentEntry.prompt) == "需复习"))
+        {
+            damage += 3;
+            comboLabel += " + 错题王冠";
+        }
+
+        if (HasRelic("glass_sword") && !glassSwordBroken && playerHp == playerMaxHp)
+        {
+            damage += 2;
+            comboLabel += " + 玻璃剑";
+        }
+
+        if (HasRelic("gambler_dice"))
+        {
+            int roll = UnityEngine.Random.Range(0, 6);
+            if (roll == 0)
+            {
+                damage = 1;
+                comboLabel += " / 骰子失手";
+            }
+            else if (roll >= 4)
+            {
+                damage += 4;
+                comboLabel += " / 骰子暴走";
+            }
+        }
+
+        if (CurrentRule() == "guard")
+        {
+            damage = Mathf.Max(1, damage - 1);
+            comboLabel += " / 守卫减伤";
+        }
+
         return damage;
     }
 
@@ -678,6 +934,8 @@ public class GameManager : MonoBehaviour
         currentEnemy.hp -= damageToEnemy;
         hintText.text = "看过答案后命中，已标为需复习";
         answerPreviewText.text = "正确写法: " + answer;
+        SpawnFloatingText(enemyPanelRect, "-1", RuntimeUI.Gold, 42);
+        SpawnParticleBurst(enemyPanelRect, RuntimeUI.Gold, 8);
         StartCoroutine(PulseEnemy(new Color(1f, 0.85f, 0.58f, 1f)));
         FinishHitIfEnemyDefeated();
         if (activeNode != null && mapRoot != null && !mapRoot.activeSelf)
@@ -688,17 +946,34 @@ public class GameManager : MonoBehaviour
     {
         if (currentEnemy.hp <= 0)
         {
-            bool rewardRelic = activeNode != null && (activeNode.type == MapNodeType.Elite || activeNode.type == MapNodeType.Boss);
+            bool rewardRelic = activeNode != null && (activeNode.type == MapNodeType.Elite || activeNode.type == MapNodeType.Boss || eventReviewGamble);
             kills++;
             int goldReward = currentEnemyTemplate != null && currentEnemyTemplate.isBoss ? 50 : (activeNode != null && activeNode.type == MapNodeType.Elite ? 35 : 18);
+            if (activeEnemyRule == "ninja")
+                goldReward += 20;
             if (HasRelic("coin_purse"))
                 goldReward = Mathf.RoundToInt(goldReward * 1.5f);
             gold += goldReward;
             GainXp(currentEnemyTemplate != null && currentEnemyTemplate.isBoss ? 45 : (activeNode != null && activeNode.type == MapNodeType.Elite ? 30 : 15));
             score += currentEnemyTemplate != null && currentEnemyTemplate.isBoss ? 120 : (activeNode != null && activeNode.type == MapNodeType.Elite ? 70 : 35);
             hintText.text = currentEnemyTemplate != null && currentEnemyTemplate.isBoss ? "首领击败" : "战斗胜利";
+            if (currentEnemyTemplate != null && currentEnemyTemplate.isBoss)
+                LongTermProgress.RecordBoss(currentEnemyTemplate.name);
+            if (activeNode != null && activeNode.type == MapNodeType.Boss)
+                LongTermProgress.RecordRouteClear();
+            if (HasRelic("time_bond"))
+            {
+                playerHp = Mathf.Max(1, playerHp - 1);
+                hintText.text += "，时间债券扣除 1 生命";
+            }
+            nextBattleTimeBonus = 0;
+            nextBattleTimePenalty = 0;
             if (reviewBattle && !string.IsNullOrEmpty(activeReviewWrongId) && WrongBook.Instance != null)
+            {
                 WrongBook.Instance.MarkReviewCorrect(activeReviewWrongId, 2);
+                if (HasRelic("review_chalice"))
+                    playerHp = Mathf.Min(playerMaxHp, playerHp + 1);
+            }
             CompleteActiveNode();
             UpdateHud();
             SaveProgress();
@@ -723,18 +998,37 @@ public class GameManager : MonoBehaviour
 
         WordProgressStore.Record(selectedLang, currentEntry.prompt, false);
         combo = 0;
+
+        if (WrongBook.Instance != null)
+            WrongBook.Instance.AddOrUpdate(selectedLang, currentEntry.prompt, currentAnswers, answerInput != null ? answerInput.text : "");
+
+        bool canRepeat = (CurrentRule() == "slime" || HasRelic("repeater")) && !repeaterPending;
+        if (canRepeat)
+        {
+            repeaterPending = true;
+            hintText.text = CurrentRule() == "slime" ? "史莱姆分裂: 同一题再来一次" : "复读机触发: 第二次答对不扣血";
+            answerPreviewText.text = "答案暂不揭晓，重答成功可避免扣血。";
+            if (answerInput) answerInput.text = "";
+            currentQuestionLimit = Mathf.Min(60f, currentQuestionLimit + 8f);
+            timeLeft = currentQuestionLimit;
+            UpdateTimerBar();
+            if (answerInput) answerInput.ActivateInputField();
+            return;
+        }
+
         string penaltyLabel;
         int hpLoss = ApplyEnemyPenalty(out penaltyLabel);
+        if (HasRelic("wrong_crown") && (reviewBattle || WordProgressStore.Label(selectedLang, currentEntry.prompt) == "需复习"))
+            hpLoss *= 2;
         playerHp = Mathf.Max(0, playerHp - hpLoss);
+        if (hpLoss > 0)
+            glassSwordBroken = true;
         if (playerHp <= 0 && HasRelic("phoenix_leaf") && !phoenixLeafUsed)
         {
             phoenixLeafUsed = true;
             playerHp = Mathf.Min(playerMaxHp, 2);
             penaltyLabel += "，凤羽触发，生命回复 2";
         }
-
-        if (WrongBook.Instance != null)
-            WrongBook.Instance.AddOrUpdate(selectedLang, currentEntry.prompt, currentAnswers, answerInput != null ? answerInput.text : "");
 
         if (playerHp <= 0)
         {
@@ -748,14 +1042,38 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        if (eventReviewGamble)
+        {
+            eventReviewGamble = false;
+            reviewBattle = false;
+            CompleteActiveNode();
+            UpdateHud();
+            SaveProgress();
+            ShowMap("错题赌局失败，生命已扣除。");
+            return;
+        }
+
         waitingNext = true;
         hintText.text = reason + " - " + penaltyLabel;
         answerPreviewText.text = "答案: " + FormatCurrentAnswers();
+        SpawnFloatingText(questionPanelRect, "MISS", RuntimeUI.Coral, 46);
+        SpawnParticleBurst(questionPanelRect, RuntimeUI.Coral, 12);
         StartCoroutine(Shake(questionPanelRect, 18f, 0.20f));
+        StartCoroutine(ScreenShake(7f, 0.14f));
         SetPlayInteractable(false);
-        if (nextButton) nextButton.interactable = true;
+        bool requiresConfirm = reviewBattle || (currentEnemyTemplate != null && currentEnemyTemplate.isBoss);
+        if (nextButton) nextButton.interactable = requiresConfirm;
+        if (!requiresConfirm)
+            StartCoroutine(AutoNextQuestionAfterDelay(wrongAnswerReviewDelay));
         UpdateHud();
         SaveProgress();
+    }
+
+    private IEnumerator AutoNextQuestionAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (waitingNext && !gameOver)
+            NextQuestion();
     }
 
     private int ApplyEnemyPenalty(out string penaltyLabel)
@@ -804,9 +1122,26 @@ public class GameManager : MonoBehaviour
         int minDifficulty;
         int maxDifficulty;
         GetDifficultyWindow(out minDifficulty, out maxDifficulty);
-        currentEntry = wordDb != null ? wordDb.GetLearningEntryByLangAndDifficulty(selectedLang, minDifficulty, maxDifficulty) : null;
-        currentQuestionLimit = Mathf.Max(7f, questionTimeLimit + RelicTimeBonus() - Mathf.Min(5f, kills * 0.3f) - nextQuestionTimePenalty);
+        questionIndexInBattle++;
+        if (!eventReviewGamble && (activeNode == null || activeNode.type != MapNodeType.Review))
+        {
+            reviewBattle = false;
+            activeReviewWrongId = "";
+        }
+        WrongEntry bossWrong = CurrentRule() == "boss_review" && WrongBook.Instance != null ? WrongBook.Instance.GetRandomForLang(selectedLang) : null;
+        if (bossWrong != null)
+        {
+            currentEntry = new Entry { lang = bossWrong.lang, prompt = bossWrong.prompt, answers = bossWrong.answers, difficulty = 1 };
+            activeReviewWrongId = bossWrong.id;
+            reviewBattle = true;
+        }
+        else
+        {
+            currentEntry = wordDb != null ? wordDb.GetLearningEntryByLangAndDifficulty(selectedLang, minDifficulty, maxDifficulty) : null;
+        }
+        currentQuestionLimit = Mathf.Clamp(questionTimeLimit + RelicTimeBonus() - nextBattleTimePenalty - Mathf.Min(8f, kills * 0.35f) - nextQuestionTimePenalty, 10f, 60f);
         nextQuestionTimePenalty = 0f;
+        ApplyEnemyRuleToQuestion();
         timeLeft = currentQuestionLimit;
         answerRevealed = false;
         answerPreviewText.text = "";
@@ -818,19 +1153,118 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        wordText.text = currentEntry.prompt;
+        string displayPrompt = PromptForCurrentEnemy(currentEntry.prompt);
+        RuntimeUI.RegisterTextCharacters(displayPrompt);
+        wordText.text = displayPrompt;
         currentAnswers = currentEntry.answers ?? System.Array.Empty<string>();
         studyPromptText.text = selectedLang == "en" ? "根据中文回忆英文拼写" : "根据中文回忆日语读法";
         masteryText.text = WordProgressStore.Label(selectedLang, currentEntry.prompt);
         difficultyText.text = "词汇难度 " + minDifficulty + "-" + maxDifficulty + " / " + MapNodeTypeLabel(activeNode != null ? activeNode.type : MapNodeType.Monster);
-        hintText.text = "先在脑中回忆，再输入答案。";
+        hintText.text = CurrentRule() == "mage" || CurrentRule() == "boss_review" ? "法师遮蔽: 部分释义被封印。" : "先在脑中回忆，再输入答案。";
         UpdateTimerBar();
+    }
+
+    private void ApplyEnemyRuleToQuestion()
+    {
+        string rule = CurrentRule();
+        if (hintButton)
+            hintButton.interactable = rule != "ghost" && rule != "boss_no_hint";
+
+        if (rule == "ninja")
+            currentQuestionLimit = Mathf.Max(8f, currentQuestionLimit - 12f);
+        else if (rule == "boss_speed")
+            currentQuestionLimit = Mathf.Max(10f, currentQuestionLimit - 18f);
+        else if (rule == "boss_combo")
+            currentQuestionLimit = Mathf.Max(12f, currentQuestionLimit - 8f);
+        else if (rule == "pressure")
+            currentQuestionLimit = Mathf.Max(12f, currentQuestionLimit - 6f);
+    }
+
+    private string CurrentRule()
+    {
+        if (currentEnemyTemplate == null)
+            return "normal";
+
+        if (!currentEnemyTemplate.isBoss)
+            return string.IsNullOrWhiteSpace(activeEnemyRule) ? "normal" : activeEnemyRule;
+
+        int phase = (questionIndexInBattle / 3) % 4;
+        if (phase == 0)
+            return "boss_speed";
+        if (phase == 1)
+            return "boss_no_hint";
+        if (phase == 2)
+            return "boss_review";
+        return "boss_combo";
+    }
+
+    private string RuleLabel(string rule)
+    {
+        switch (rule)
+        {
+            case "ninja":
+                return "疾速";
+            case "ghost":
+                return "无提示";
+            case "slime":
+                return "分裂";
+            case "mage":
+                return "遮蔽";
+            case "guard":
+                return "守护";
+            case "pressure":
+                return "压迫";
+            case "trickster":
+                return "诡术";
+            case "boss_speed":
+                return "首领: 限时";
+            case "boss_no_hint":
+                return "首领: 无提示";
+            case "boss_review":
+                return "首领: 遮蔽";
+            case "boss_combo":
+                return "首领: 连击";
+            default:
+                return "标准";
+        }
+    }
+
+    private string PromptForCurrentEnemy(string prompt)
+    {
+        string rule = CurrentRule();
+        if (string.IsNullOrEmpty(prompt))
+            return prompt;
+
+        if (rule != "mage" && rule != "boss_review")
+            return prompt;
+
+        char[] chars = prompt.ToCharArray();
+        for (int i = 0; i < chars.Length; i++)
+        {
+            if (i % 3 == 1 && !char.IsWhiteSpace(chars[i]) && !char.IsPunctuation(chars[i]))
+                chars[i] = '?';
+        }
+        return new string(chars);
     }
 
     private void ShowHint()
     {
         if (currentAnswers == null || currentAnswers.Length == 0)
             return;
+
+        if (CurrentRule() == "ghost" || CurrentRule() == "boss_no_hint")
+        {
+            hintText.text = "敌人规则: 本题无法使用提示";
+            return;
+        }
+
+        if (hintCharges <= 0)
+        {
+            hintText.text = "提示次数不足，可在商店补充。";
+            return;
+        }
+
+        hintCharges--;
 
         string answer = currentAnswers[0];
         string first = answer.Length > 0 ? answer.Substring(0, 1) : "?";
@@ -861,7 +1295,7 @@ public class GameManager : MonoBehaviour
         if (nextButton) nextButton.interactable = false;
         if (reviewBattle && currentEntry != null)
         {
-            currentQuestionLimit = questionTimeLimit + RelicTimeBonus();
+            currentQuestionLimit = Mathf.Clamp(questionTimeLimit + RelicTimeBonus(), 10f, 60f);
             timeLeft = currentQuestionLimit;
             hintText.text = "继续复习这道错题。";
             answerPreviewText.text = "";
@@ -895,6 +1329,9 @@ public class GameManager : MonoBehaviour
         EnemyTemplate template = ChooseEnemyTemplate();
         currentEnemyTemplate = template;
         firstMissBlockedThisBattle = false;
+        repeaterPending = false;
+        questionIndexInBattle = 0;
+        activeEnemyRule = string.IsNullOrWhiteSpace(template.ruleType) ? "normal" : template.ruleType;
         currentEnemy.name = template.name;
         int depthBonus = activeNode != null ? activeNode.depth : kills / 2;
         float nodeMultiplier = activeNode != null && activeNode.type == MapNodeType.Elite ? 1.35f : 1f;
@@ -905,6 +1342,7 @@ public class GameManager : MonoBehaviour
         currentEnemy.hp = currentEnemy.maxHp;
         damageToEnemy = 1;
         UpdateEnemyArt(template);
+        StartEnemyIdle();
     }
 
     private EnemyTemplate ChooseEnemyTemplate()
@@ -950,11 +1388,11 @@ public class GameManager : MonoBehaviour
         if (killsText) killsText.text = "击败 " + kills;
         if (modeText) modeText.text = selectedLang == "en" ? "模式 EN" : "模式 JP";
         if (playerHpText) playerHpText.text = "生命 " + playerHp + "/" + playerMaxHp;
-        if (growthText) growthText.text = "Lv" + level + "  XP " + xp + "/" + (level * 60) + "  金币 " + gold;
+        if (growthText) growthText.text = "Lv" + level + "  XP " + xp + "/" + (level * 60) + "  金币 " + gold + "  提示 " + hintCharges;
         if (relicText) relicText.text = "遗物: " + RelicSummary();
         if (enemyHPText) enemyHPText.text = currentEnemy.name + "  " + currentEnemy.hp + "/" + currentEnemy.maxHp;
         if (enemyMetaText && currentEnemyTemplate != null)
-            enemyMetaText.text = currentEnemyTemplate.faction + "  Tier " + currentEnemyTemplate.tier;
+            enemyMetaText.text = currentEnemyTemplate.faction + "  Tier " + currentEnemyTemplate.tier + "  " + RuleLabel(CurrentRule());
 
         enemyHpTarget = currentEnemy.maxHp > 0 ? Mathf.Clamp01((float)currentEnemy.hp / currentEnemy.maxHp) : 0f;
         playerHpTarget = playerMaxHp > 0 ? Mathf.Clamp01((float)playerHp / playerMaxHp) : 0f;
@@ -1004,6 +1442,33 @@ public class GameManager : MonoBehaviour
         return false;
     }
 
+    private void StartEnemyIdle()
+    {
+        if (enemyIdleRoutine != null)
+            StopCoroutine(enemyIdleRoutine);
+        enemyIdleRoutine = StartCoroutine(EnemyIdleLoop());
+    }
+
+    private IEnumerator EnemyIdleLoop()
+    {
+        if (enemyImage == null)
+            yield break;
+
+        RectTransform rt = enemyImage.GetComponent<RectTransform>();
+        Vector2 basePos = rt.anchoredPosition;
+        Vector3 baseScale = Vector3.one;
+        float seed = UnityEngine.Random.Range(0f, 6f);
+
+        while (enemyImage != null)
+        {
+            float wave = Mathf.Sin(Time.time * 1.8f + seed);
+            rt.anchoredPosition = basePos + new Vector2(0f, wave * 7f);
+            if (!waitingNext)
+                enemyImage.transform.localScale = baseScale * (1f + wave * 0.015f);
+            yield return null;
+        }
+    }
+
     private IEnumerator PulseEnemy(Color color)
     {
         if (enemyImage == null)
@@ -1033,6 +1498,95 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
         target.anchoredPosition = original;
+    }
+
+    private IEnumerator ScreenShake(float strength, float duration)
+    {
+        if (canvasRect == null)
+            yield break;
+
+        Vector2 original = canvasRect.anchoredPosition;
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            float t = 1f - elapsed / duration;
+            canvasRect.anchoredPosition = original + UnityEngine.Random.insideUnitCircle * strength * t;
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        canvasRect.anchoredPosition = original;
+    }
+
+    private void SpawnFloatingText(RectTransform parent, string value, Color color, int size)
+    {
+        if (parent == null)
+            return;
+
+        TMP_Text text = RuntimeUI.Text(parent, "Float Text", value, size, color, TextAlignmentOptions.Center);
+        RectTransform rt = text.GetComponent<RectTransform>();
+        rt.anchorMin = new Vector2(0.5f, 0.5f);
+        rt.anchorMax = new Vector2(0.5f, 0.5f);
+        rt.sizeDelta = new Vector2(420f, 90f);
+        rt.anchoredPosition = new Vector2(UnityEngine.Random.Range(-40f, 40f), UnityEngine.Random.Range(20f, 90f));
+        StartCoroutine(FloatAndFade(text));
+    }
+
+    private IEnumerator FloatAndFade(TMP_Text text)
+    {
+        RectTransform rt = text.GetComponent<RectTransform>();
+        Color start = text.color;
+        Vector2 origin = rt.anchoredPosition;
+        float duration = 0.75f;
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            float t = elapsed / duration;
+            rt.anchoredPosition = origin + new Vector2(0f, 80f * t);
+            text.color = new Color(start.r, start.g, start.b, 1f - t);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        Destroy(text.gameObject);
+    }
+
+    private void SpawnParticleBurst(RectTransform parent, Color color, int count)
+    {
+        if (parent == null)
+            return;
+
+        for (int i = 0; i < count; i++)
+        {
+            GameObject go = new GameObject("Hit Spark", typeof(RectTransform), typeof(Image));
+            go.transform.SetParent(parent, false);
+            Image image = go.GetComponent<Image>();
+            image.color = color;
+            image.raycastTarget = false;
+            RectTransform rt = go.GetComponent<RectTransform>();
+            rt.anchorMin = new Vector2(0.5f, 0.5f);
+            rt.anchorMax = new Vector2(0.5f, 0.5f);
+            float size = UnityEngine.Random.Range(8f, 20f);
+            rt.sizeDelta = new Vector2(size, size);
+            rt.anchoredPosition = new Vector2(UnityEngine.Random.Range(-30f, 30f), UnityEngine.Random.Range(0f, 70f));
+            Vector2 velocity = UnityEngine.Random.insideUnitCircle.normalized * UnityEngine.Random.Range(60f, 170f);
+            StartCoroutine(ParticleFade(image, rt, velocity));
+        }
+    }
+
+    private IEnumerator ParticleFade(Image image, RectTransform rt, Vector2 velocity)
+    {
+        Color start = image.color;
+        float duration = 0.45f;
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            float t = elapsed / duration;
+            rt.anchoredPosition += velocity * Time.deltaTime;
+            rt.localScale = Vector3.one * (1f - t * 0.65f);
+            image.color = new Color(start.r, start.g, start.b, 1f - t);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        Destroy(image.gameObject);
     }
 
     private MapNode[] GenerateMap(int seed)
@@ -1108,7 +1662,7 @@ public class GameManager : MonoBehaviour
         SetPlayInteractable(false);
         if (nextButton) nextButton.interactable = false;
         if (mapTitleText) mapTitleText.text = routeComplete ? "路线完成" : "选择路线";
-        if (mapStatusText) mapStatusText.text = status;
+        if (mapStatusText) mapStatusText.text = status + "  |  " + LongTermProgress.Summary();
         RebuildMapNodes();
     }
 
@@ -1311,18 +1865,19 @@ public class GameManager : MonoBehaviour
     {
         enemyTemplates = new[]
         {
-            new EnemyTemplate { name = "Goblin Scribe", baseMaxHp = 3, isBoss = false, artResource = "Art/Enemies/enemy_goblin", faction = "Western Fantasy", minKills = 0, tier = 1 },
-            new EnemyTemplate { name = "Dire Wolf", baseMaxHp = 4, isBoss = false, artResource = "Art/Enemies/enemy_dire_wolf", faction = "Western Fantasy", minKills = 1, tier = 1 },
-            new EnemyTemplate { name = "Kappa Trickster", baseMaxHp = 4, isBoss = false, artResource = "Art/Enemies/enemy_kappa", faction = "Japanese Myth", minKills = 1, tier = 1 },
-            new EnemyTemplate { name = "Paper Tengu", baseMaxHp = 5, isBoss = false, artResource = "Art/Enemies/enemy_tengu", faction = "Japanese Myth", minKills = 2, tier = 2 },
-            new EnemyTemplate { name = "Wyvern Whelp", baseMaxHp = 5, isBoss = false, artResource = "Art/Enemies/enemy_wyvern", faction = "Western Fantasy", minKills = 2, tier = 2 },
-            new EnemyTemplate { name = "Kitsune Adept", baseMaxHp = 6, isBoss = false, artResource = "Art/Enemies/enemy_kitsune", faction = "Japanese Myth", minKills = 3, tier = 2 },
-            new EnemyTemplate { name = "Griffin Guard", baseMaxHp = 7, isBoss = false, artResource = "Art/Enemies/enemy_griffin", faction = "Western Fantasy", minKills = 4, tier = 3 },
-            new EnemyTemplate { name = "Yuki-onna", baseMaxHp = 7, isBoss = false, artResource = "Art/Enemies/enemy_yuki_onna", faction = "Japanese Myth", minKills = 4, tier = 3 },
-            new EnemyTemplate { name = "Lich Librarian", baseMaxHp = 10, isBoss = true, artResource = "Art/Enemies/enemy_lich", faction = "Western Boss", minKills = 5, tier = 3 },
-            new EnemyTemplate { name = "Oni Warlord", baseMaxHp = 11, isBoss = true, artResource = "Art/Enemies/enemy_oni", faction = "Japanese Boss", minKills = 6, tier = 3 },
-            new EnemyTemplate { name = "Nue Chimera", baseMaxHp = 12, isBoss = true, artResource = "Art/Enemies/enemy_nue", faction = "Japanese Boss", minKills = 7, tier = 3 },
-            new EnemyTemplate { name = "Archdemon", baseMaxHp = 13, isBoss = true, artResource = "Art/Enemies/enemy_archdemon", faction = "Western Boss", minKills = 8, tier = 3 }
+            new EnemyTemplate { name = "Ink Slime", baseMaxHp = 3, isBoss = false, artResource = "Art/enemy_ink_slime", faction = "Study Ooze", ruleType = "slime", minKills = 0, tier = 1 },
+            new EnemyTemplate { name = "Goblin Scribe", baseMaxHp = 3, isBoss = false, artResource = "Art/Enemies/enemy_goblin", faction = "Western Fantasy", ruleType = "normal", minKills = 0, tier = 1 },
+            new EnemyTemplate { name = "Dire Wolf", baseMaxHp = 4, isBoss = false, artResource = "Art/Enemies/enemy_dire_wolf", faction = "Western Fantasy", ruleType = "ninja", minKills = 1, tier = 1 },
+            new EnemyTemplate { name = "Kappa Trickster", baseMaxHp = 4, isBoss = false, artResource = "Art/Enemies/enemy_kappa", faction = "Japanese Myth", ruleType = "trickster", minKills = 1, tier = 1 },
+            new EnemyTemplate { name = "Paper Tengu", baseMaxHp = 5, isBoss = false, artResource = "Art/Enemies/enemy_tengu", faction = "Japanese Myth", ruleType = "ninja", minKills = 2, tier = 2 },
+            new EnemyTemplate { name = "Wyvern Whelp", baseMaxHp = 5, isBoss = false, artResource = "Art/Enemies/enemy_wyvern", faction = "Western Fantasy", ruleType = "pressure", minKills = 2, tier = 2 },
+            new EnemyTemplate { name = "Kitsune Adept", baseMaxHp = 6, isBoss = false, artResource = "Art/Enemies/enemy_kitsune", faction = "Japanese Myth", ruleType = "mage", minKills = 3, tier = 2 },
+            new EnemyTemplate { name = "Griffin Guard", baseMaxHp = 7, isBoss = false, artResource = "Art/Enemies/enemy_griffin", faction = "Western Fantasy", ruleType = "guard", minKills = 4, tier = 3 },
+            new EnemyTemplate { name = "Yuki-onna", baseMaxHp = 7, isBoss = false, artResource = "Art/Enemies/enemy_yuki_onna", faction = "Japanese Myth", ruleType = "ghost", minKills = 4, tier = 3 },
+            new EnemyTemplate { name = "Lich Librarian", baseMaxHp = 10, isBoss = true, artResource = "Art/Enemies/enemy_lich", faction = "Western Boss", ruleType = "boss", minKills = 5, tier = 3 },
+            new EnemyTemplate { name = "Oni Warlord", baseMaxHp = 11, isBoss = true, artResource = "Art/Enemies/enemy_oni", faction = "Japanese Boss", ruleType = "boss", minKills = 6, tier = 3 },
+            new EnemyTemplate { name = "Nue Chimera", baseMaxHp = 12, isBoss = true, artResource = "Art/Enemies/enemy_nue", faction = "Japanese Boss", ruleType = "boss", minKills = 7, tier = 3 },
+            new EnemyTemplate { name = "Archdemon", baseMaxHp = 13, isBoss = true, artResource = "Art/Enemies/enemy_archdemon", faction = "Western Boss", ruleType = "boss", minKills = 8, tier = 3 }
         };
     }
 
@@ -1341,6 +1896,9 @@ public class GameManager : MonoBehaviour
             gold = gold,
             xp = xp,
             level = level,
+            hintCharges = hintCharges,
+            nextBattleTimeBonus = nextBattleTimeBonus,
+            nextBattleTimePenalty = nextBattleTimePenalty,
             playerMaxHp = playerMaxHp,
             playerHp = playerHp,
             completedCsv = string.Join(",", new List<string>(completedNodes).ToArray()),
@@ -1367,6 +1925,9 @@ public class GameManager : MonoBehaviour
         gold = progress.gold;
         xp = progress.xp;
         level = progress.level > 0 ? progress.level : 1;
+        hintCharges = progress.hintCharges > 0 ? progress.hintCharges : 2;
+        nextBattleTimeBonus = progress.nextBattleTimeBonus;
+        nextBattleTimePenalty = progress.nextBattleTimePenalty;
         playerMaxHp = progress.playerMaxHp > 0 ? progress.playerMaxHp : startPlayerMaxHp;
         playerHp = Mathf.Clamp(progress.playerHp, 1, playerMaxHp);
         completedNodes = ParseCompleted(progress.completedCsv);

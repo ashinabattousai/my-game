@@ -34,6 +34,9 @@ public class RunProgress
     public int gold;
     public int xp;
     public int level;
+    public int hintCharges;
+    public int nextBattleTimeBonus;
+    public int nextBattleTimePenalty;
     public int playerMaxHp;
     public int playerHp;
     public string completedCsv;

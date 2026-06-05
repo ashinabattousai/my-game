@@ -83,6 +83,18 @@ public static class WordProgressStore
         return "学习中";
     }
 
+    public static int MasteredCount()
+    {
+        EnsureLoaded();
+        int count = 0;
+        for (int i = 0; i < cache.items.Count; i++)
+        {
+            if (cache.items[i].streak >= 3)
+                count++;
+        }
+        return count;
+    }
+
     public static int Weight(string lang, string prompt)
     {
         WordMemory memory = Get(lang, prompt);
