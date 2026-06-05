@@ -1,0 +1,10 @@
+﻿{
+  "version": 1,
+  "relics": [
+    { "id": "hourglass", "name": "沙漏", "description": "每题时间 +3 秒", "tags": ["时间"] },
+    { "id": "amulet", "name": "护身符", "description": "每场战斗第一次答错不扣血", "tags": ["防御"] },
+    { "id": "combo_sword", "name": "连击剑", "description": "每 3 连击额外 +1 伤害", "tags": ["连击", "伤害"] },
+    { "id": "review_book", "name": "复习之书", "description": "需复习词额外 +1 伤害", "tags": ["复习", "伤害"] },
+    { "id": "wrong_crown", "name": "错题王冠", "description": "复习题伤害 +3，但答错双倍扣血", "tags": ["复习", "高风险"] }
+  ]
+}

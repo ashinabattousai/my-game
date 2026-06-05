@@ -37,8 +37,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float questionTimeLimit = 60f;
     [SerializeField] private float wrongAnswerReviewDelay = 2.8f;
     [SerializeField] private bool useRuntimeUi = true;
-    [SerializeField] private int mapDepthCount = 12;
+    [SerializeField] private int mapDepthCount = 13;
     [SerializeField] private int mapRows = 3;
+    [SerializeField] private bool hideUnvisitedMapNodes = false;
+    [SerializeField] private int maxRelicSlots = 3;
+    [SerializeField] private string backgroundMusicResource = "Audio/bgm_enishi";
+    [SerializeField] private float backgroundMusicVolume = 0.42f;
 
     private readonly BattleLogic logic = new BattleLogic();
     private Entry currentEntry;
@@ -78,11 +82,19 @@ public class GameManager : MonoBehaviour
     private EnemyTemplate currentEnemyTemplate;
     private RawImage enemyImage;
     private Image enemyHpFill;
+    private Image enemyHpTrailFill;
+    private RectTransform enemyHpFillRect;
+    private RectTransform enemyHpTrailFillRect;
     private Image playerHpFill;
+    private Image playerHpTrailFill;
+    private RectTransform playerHpFillRect;
+    private RectTransform playerHpTrailFillRect;
     private Image timerFill;
     private TMP_Text answerPreviewText;
     private TMP_Text masteryText;
     private TMP_Text studyPromptText;
+    private TMP_Text enemyHpBarText;
+    private TMP_Text playerHpBarText;
     private Button hintButton;
     private Button revealButton;
     private RectTransform enemyPanelRect;
@@ -91,7 +103,11 @@ public class GameManager : MonoBehaviour
     private Image transitionImage;
     private Coroutine enemyIdleRoutine;
     private float enemyHpTarget = 1f;
+    private float enemyHpVisible = 1f;
+    private float enemyHpTrailVisible = 1f;
     private float playerHpTarget = 1f;
+    private float playerHpVisible = 1f;
+    private float playerHpTrailVisible = 1f;
     private float timerTarget = 1f;
 
     private GameObject mapRoot;
@@ -102,9 +118,13 @@ public class GameManager : MonoBehaviour
     private Transform mapContent;
     private TMP_Text mapTitleText;
     private TMP_Text mapStatusText;
+    private Texture2D mapStampTexture;
+    private Texture2D mapFrameTexture;
+    private AudioSource musicSource;
     private MapNode[] runMap = System.Array.Empty<MapNode>();
     private HashSet<string> completedNodes = new HashSet<string>();
     private HashSet<string> relics = new HashSet<string>();
+    private List<string> relicSlots = new List<string>();
     private MapNode activeNode;
 
     private void Start()
@@ -122,6 +142,7 @@ public class GameManager : MonoBehaviour
         if (hintButton) hintButton.onClick.AddListener(ShowHint);
         if (revealButton) revealButton.onClick.AddListener(RevealAnswer);
 
+        StartBackgroundMusic();
         InitializeRun();
     }
 
@@ -171,8 +192,12 @@ public class GameManager : MonoBehaviour
         RuntimeUI.Layout(enemyHPText.gameObject, 40, 52);
         enemyMetaText = RuntimeUI.Text(stage.transform, "Enemy Meta", "", 22, RuntimeUI.Hex("99A8B8"), TextAlignmentOptions.Center);
         RuntimeUI.Layout(enemyMetaText.gameObject, 34, 44);
-        enemyHpFill = CreateBar(stage.transform, RuntimeUI.Coral, RuntimeUI.Hex("351B24"));
-        RuntimeUI.Layout(enemyHpFill.transform.parent.gameObject, 22, 30);
+        enemyHpFill = CreateHpBar(stage.transform, out enemyHpTrailFill, RuntimeUI.Hex("F01822"), RuntimeUI.Hex("FF7A72"), RuntimeUI.Hex("330B10"));
+        enemyHpFillRect = enemyHpFill.GetComponent<RectTransform>();
+        enemyHpTrailFillRect = enemyHpTrailFill.GetComponent<RectTransform>();
+        RuntimeUI.Layout(enemyHpFill.transform.parent.gameObject, 34, 44);
+        enemyHpBarText = RuntimeUI.Text(enemyHpFill.transform.parent, "Enemy HP Label", "敌人 0/0", 20, RuntimeUI.Paper, TextAlignmentOptions.Center);
+        RuntimeUI.SetRect(enemyHpBarText, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
 
         Image card = RuntimeUI.Panel(canvas.transform, "Study Card", new Color(0.965f, 0.91f, 0.76f, 0.94f), new Vector2(0.425f, 0.12f), new Vector2(0.945f, 0.84f), Vector2.zero, Vector2.zero);
         card.gameObject.AddComponent<DraggablePanel>();
@@ -194,8 +219,15 @@ public class GameManager : MonoBehaviour
         answerPreviewText = RuntimeUI.Text(card.transform, "Answer Preview", "", 26, RuntimeUI.Hex("394B5C"), TextAlignmentOptions.Center);
         RuntimeUI.Layout(answerPreviewText.gameObject, 48, 62);
 
-        timerFill = CreateBar(card.transform, RuntimeUI.Teal, RuntimeUI.Hex("CDBB8D"));
-        RuntimeUI.Layout(timerFill.transform.parent.gameObject, 18, 26);
+        playerHpFill = CreateHpBar(card.transform, out playerHpTrailFill, RuntimeUI.Hex("32D26B"), RuntimeUI.Hex("8BF0A9"), RuntimeUI.Hex("17351F"));
+        playerHpFillRect = playerHpFill.GetComponent<RectTransform>();
+        playerHpTrailFillRect = playerHpTrailFill.GetComponent<RectTransform>();
+        RuntimeUI.Layout(playerHpFill.transform.parent.gameObject, 28, 38);
+        playerHpBarText = RuntimeUI.Text(playerHpFill.transform.parent, "Player HP Label", "玩家生命 5/5", 18, RuntimeUI.Paper, TextAlignmentOptions.Center);
+        RuntimeUI.SetRect(playerHpBarText, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+
+        timerFill = CreateBar(card.transform, RuntimeUI.Hex("56B8FF"), RuntimeUI.Hex("CDBB8D"));
+        RuntimeUI.Layout(timerFill.transform.parent.gameObject, 10, 16);
         answerInput = RuntimeUI.InputField(card.transform, "输入答案后按 Enter");
         RuntimeUI.Layout(answerInput.gameObject, 68, 82);
 
@@ -222,10 +254,6 @@ public class GameManager : MonoBehaviour
         AddTooltip(nextButton, "查看完答案后进入下一题。");
         AddTooltip(restartButton, "放弃当前路线并生成更长的新路线。");
         AddTooltip(backHomeButton, "退出到首页，当前进度会保留。");
-
-        Image bottom = RuntimeUI.Panel(canvas.transform, "Player HP Bar", new Color(0f, 0f, 0f, 0f), new Vector2(0.425f, 0.07f), new Vector2(0.945f, 0.095f), Vector2.zero, Vector2.zero);
-        playerHpFill = CreateBar(bottom.transform, RuntimeUI.Gold, RuntimeUI.Hex("3B3020"));
-        RuntimeUI.SetRect(playerHpFill.transform.parent, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
 
         BuildMapOverlay(canvas.transform);
         BuildChoiceOverlay(canvas.transform);
@@ -273,25 +301,36 @@ public class GameManager : MonoBehaviour
 
     private void BuildMapOverlay(Transform parent)
     {
-        Image root = RuntimeUI.Panel(parent, "Route Map", new Color(0.02f, 0.025f, 0.035f, 0.94f), Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+        mapStampTexture = RuntimeUI.LoadTexture("Art/Map/map_stamps");
+        mapFrameTexture = RuntimeUI.LoadTexture("Art/Map/map_frame");
+        Image root = RuntimeUI.Panel(parent, "Route Map", new Color(0.012f, 0.013f, 0.018f, 1f), Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
         mapRoot = root.gameObject;
 
-        Image header = RuntimeUI.Panel(root.transform, "Map Header", new Color(0f, 0f, 0f, 0f), new Vector2(0.08f, 0.80f), new Vector2(0.92f, 0.94f), Vector2.zero, Vector2.zero);
+        if (mapFrameTexture != null)
+        {
+            RawImage frame = RuntimeUI.Background(root.transform, mapFrameTexture);
+            frame.color = Color.white;
+        }
+
+        Image header = RuntimeUI.Panel(root.transform, "Map Header", new Color(0f, 0f, 0f, 0f), new Vector2(0.28f, 0.82f), new Vector2(0.89f, 0.93f), Vector2.zero, Vector2.zero);
         RuntimeUI.AddVerticalLayout(header.gameObject, 0, 6);
         mapTitleText = RuntimeUI.Text(header.transform, "Map Title", "选择路线", 62, RuntimeUI.Paper, TextAlignmentOptions.Center);
         RuntimeUI.Layout(mapTitleText.gameObject, 74, 86);
         mapStatusText = RuntimeUI.Text(header.transform, "Map Status", "选择一个可到达的关卡。", 28, RuntimeUI.Hex("B8C2D0"), TextAlignmentOptions.Center);
         RuntimeUI.Layout(mapStatusText.gameObject, 42, 54);
 
-        Image content = RuntimeUI.Panel(root.transform, "Map Content", new Color(0.82f, 0.72f, 0.50f, 0.10f), new Vector2(0.07f, 0.18f), new Vector2(0.93f, 0.78f), Vector2.zero, Vector2.zero);
+        Image content = RuntimeUI.Panel(root.transform, "Map Content", new Color(0f, 0f, 0f, 0f), new Vector2(0.275f, 0.235f), new Vector2(0.905f, 0.785f), Vector2.zero, Vector2.zero);
+        content.raycastTarget = false;
         mapContent = content.transform;
 
-        GameObject bottomButtons = new GameObject("Map Buttons", typeof(RectTransform));
-        bottomButtons.transform.SetParent(root.transform, false);
-        RuntimeUI.SetRect(bottomButtons.transform, new Vector2(0.30f, 0.065f), new Vector2(0.70f, 0.145f), Vector2.zero, Vector2.zero);
-        RuntimeUI.AddHorizontalLayout(bottomButtons, 0, 18);
-        Button restartMap = RuntimeUI.Button(bottomButtons.transform, "Restart Route", "生成新路线", RuntimeUI.Coral, Color.white);
-        Button back = RuntimeUI.Button(bottomButtons.transform, "Back Home", "返回首页", RuntimeUI.Hex("2E394B"), Color.white);
+        Image sidePanel = RuntimeUI.Panel(root.transform, "Map Side Actions", new Color(0f, 0f, 0f, 0f), new Vector2(0.07f, 0.22f), new Vector2(0.245f, 0.75f), Vector2.zero, Vector2.zero);
+        RuntimeUI.AddVerticalLayout(sidePanel.gameObject, 26, 18);
+        TMP_Text sideTitle = RuntimeUI.Text(sidePanel.transform, "Side Title", "远征", 34, RuntimeUI.Paper, TextAlignmentOptions.Center);
+        RuntimeUI.Layout(sideTitle.gameObject, 52, 66);
+        Button restartMap = RuntimeUI.Button(sidePanel.transform, "Restart Route", "生成新路线", RuntimeUI.Coral, Color.white);
+        Button back = RuntimeUI.Button(sidePanel.transform, "Back Home", "返回首页", RuntimeUI.Hex("2E394B"), Color.white);
+        RuntimeUI.Layout(restartMap.gameObject, 66, 84);
+        RuntimeUI.Layout(back.gameObject, 66, 84);
         restartMap.onClick.AddListener(RestartGame);
         back.onClick.AddListener(BackToHome);
     }
@@ -322,9 +361,10 @@ public class GameManager : MonoBehaviour
         if (choiceRoot == null || choiceContent == null)
             return;
 
+        TooltipTrigger.HideAll();
         choiceRoot.SetActive(true);
         if (choiceTitleText) choiceTitleText.text = "选择遗物";
-        if (choiceTipText) choiceTipText.text = "选择一个效果加入本轮构筑。";
+        if (choiceTipText) choiceTipText.text = relicSlots.Count >= maxRelicSlots ? "遗物槽已满，选择新遗物会替换最早装备的遗物。" : "选择一个效果加入本轮构筑。";
         ClearChoiceButtons();
         RelicDef[] options = RollRelicOptions(3);
         for (int i = 0; i < options.Length; i++)
@@ -333,6 +373,18 @@ public class GameManager : MonoBehaviour
             Button button = RuntimeUI.Button(choiceContent, relic.name, relic.name + "\n" + relic.description, RuntimeUI.Hex("8A6A3E"), Color.white);
             RuntimeUI.Layout(button.gameObject, 190, 240, 1);
             button.onClick.AddListener(() => PickRelic(relic, reason));
+        }
+
+        if (relicSlots.Count >= maxRelicSlots)
+        {
+            Button keep = RuntimeUI.Button(choiceContent, "Keep Relics", "保留当前遗物\n离开奖励", RuntimeUI.Hex("2E394B"), Color.white);
+            RuntimeUI.Layout(keep.gameObject, 190, 240, 1);
+            keep.onClick.AddListener(() =>
+            {
+                if (choiceRoot)
+                    choiceRoot.SetActive(false);
+                ShowMap(reason + " 已保留当前遗物。");
+            });
         }
     }
 
@@ -368,7 +420,7 @@ public class GameManager : MonoBehaviour
     {
         if (relic != null)
         {
-            relics.Add(relic.id);
+            EquipRelic(relic.id);
             LongTermProgress.RecordRelic(relic.id);
         }
 
@@ -396,6 +448,26 @@ public class GameManager : MonoBehaviour
         fill.color = fillColor;
         fill.type = Image.Type.Filled;
         fill.fillMethod = Image.FillMethod.Horizontal;
+        RuntimeUI.SetRect(fill, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+        return fill;
+    }
+
+    private Image CreateHpBar(Transform parent, out Image trailFill, Color fillColor, Color trailColor, Color backColor)
+    {
+        Image back = RuntimeUI.Panel(parent, "HP Bar", backColor, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+
+        trailFill = CreateBarFill(back.transform, "Damage Trail", trailColor);
+        Image fill = CreateBarFill(back.transform, "HP Fill", fillColor);
+        return fill;
+    }
+
+    private Image CreateBarFill(Transform parent, string name, Color color)
+    {
+        GameObject fillGo = new GameObject(name, typeof(RectTransform), typeof(Image));
+        fillGo.transform.SetParent(parent, false);
+        Image fill = fillGo.GetComponent<Image>();
+        fill.color = color;
+        fill.raycastTarget = false;
         RuntimeUI.SetRect(fill, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
         return fill;
     }
@@ -429,12 +501,14 @@ public class GameManager : MonoBehaviour
         nextBattleTimePenalty = 0;
         playerMaxHp = startPlayerMaxHp;
         playerHp = playerMaxHp;
+        SnapPlayerHpBar();
         activeNode = null;
         routeComplete = false;
         waitingNext = false;
         gameOver = false;
         completedNodes.Clear();
         relics.Clear();
+        relicSlots.Clear();
         phoenixLeafUsed = false;
         currentSeed = UnityEngine.Random.Range(10000, 999999);
         runMap = GenerateMap(currentSeed);
@@ -449,6 +523,7 @@ public class GameManager : MonoBehaviour
 
     private void SelectMapNode(MapNode node)
     {
+        TooltipTrigger.HideAll();
         if (node == null || !IsReachable(node) || completedNodes.Contains(node.id) || routeComplete)
             return;
 
@@ -758,6 +833,26 @@ public class GameManager : MonoBehaviour
         return relics.Contains(id);
     }
 
+    private void EquipRelic(string id)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+            return;
+
+        if (relics.Contains(id))
+            return;
+
+        int limit = Mathf.Max(1, maxRelicSlots);
+        if (relicSlots.Count >= limit)
+        {
+            string removed = relicSlots[0];
+            relicSlots.RemoveAt(0);
+            relics.Remove(removed);
+        }
+
+        relicSlots.Add(id);
+        relics.Add(id);
+    }
+
     private float RelicTimeBonus()
     {
         float bonus = 0f;
@@ -771,17 +866,20 @@ public class GameManager : MonoBehaviour
 
     private string RelicSummary()
     {
-        if (relics.Count == 0)
-            return "无";
-
         List<string> names = new List<string>();
-        foreach (string id in relics)
+        for (int i = 0; i < Mathf.Max(1, maxRelicSlots); i++)
         {
-            RelicDef relic = RelicCatalog.Find(id);
-            if (relic != null)
-                names.Add(relic.name);
+            if (i < relicSlots.Count)
+            {
+                RelicDef relic = RelicCatalog.Find(relicSlots[i]);
+                names.Add((i + 1) + "." + (relic != null ? relic.name : relicSlots[i]));
+            }
+            else
+            {
+                names.Add((i + 1) + ".空");
+            }
         }
-        return names.Count == 0 ? "无" : string.Join(" / ", names.ToArray());
+        return string.Join(" / ", names.ToArray());
     }
 
     private void ResolveNear(AnswerResult result)
@@ -1221,14 +1319,44 @@ public class GameManager : MonoBehaviour
             case "boss_no_hint":
                 return "首领: 无提示";
             case "boss_review":
-                return "首领: 遮蔽";
+                return "首领: 错题复仇";
             case "boss_combo":
-                return "首领: 连击";
+                return "首领: 连击挑战";
             default:
                 return "标准";
         }
     }
 
+    private string RuleDescription(string rule)
+    {
+        switch (rule)
+        {
+            case "ninja":
+                return "疾速: 答题时间缩短，胜利额外金币。";
+            case "ghost":
+                return "无提示: 本场不能使用提示按钮。";
+            case "slime":
+                return "分裂: 答错后重答同题，第二次答对免扣血。";
+            case "mage":
+                return "遮蔽: 部分中文释义会被隐藏。";
+            case "guard":
+                return "守护: 每次受到的伤害 -1。";
+            case "pressure":
+                return "压迫: 每题时间略微缩短。";
+            case "trickster":
+                return "诡术: 接近正确会额外扣时间。";
+            case "boss_speed":
+                return "首领阶段: 限时作答。";
+            case "boss_no_hint":
+                return "首领阶段: 禁用提示。";
+            case "boss_review":
+                return "首领阶段: 混入错题并遮蔽释义。";
+            case "boss_combo":
+                return "首领阶段: 连击越高越占优。";
+            default:
+                return "标准: 正常答题战斗。";
+        }
+    }
     private string PromptForCurrentEnemy(string prompt)
     {
         string rule = CurrentRule();
@@ -1266,9 +1394,12 @@ public class GameManager : MonoBehaviour
 
         hintCharges--;
 
-        string answer = currentAnswers[0];
+        string answer = GetCurrentHintAnswer();
         string first = answer.Length > 0 ? answer.Substring(0, 1) : "?";
-        hintText.text = "提示: 首字母 " + first + " / 长度 " + answer.Length;
+        string studyHint = wordDb != null ? wordDb.GetStudyHint(currentEntry) : "";
+        hintText.text = string.IsNullOrWhiteSpace(studyHint)
+            ? "提示: 首字母 " + first + " / 长度 " + answer.Length
+            : "提示: " + studyHint + " / 首字母 " + first + " / 长度 " + answer.Length;
         timeLeft = Mathf.Max(3f, timeLeft - 2f);
         UpdateTimerBar();
     }
@@ -1341,6 +1472,11 @@ public class GameManager : MonoBehaviour
         currentEnemy.maxHp = Mathf.Max(1, Mathf.RoundToInt((template.baseMaxHp + bonus) * nodeMultiplier));
         currentEnemy.hp = currentEnemy.maxHp;
         damageToEnemy = 1;
+        enemyHpTarget = 1f;
+        enemyHpVisible = 1f;
+        enemyHpTrailVisible = 1f;
+        SetBarWidth(enemyHpFillRect, 1f);
+        SetBarWidth(enemyHpTrailFillRect, 1f);
         UpdateEnemyArt(template);
         StartEnemyIdle();
     }
@@ -1388,11 +1524,13 @@ public class GameManager : MonoBehaviour
         if (killsText) killsText.text = "击败 " + kills;
         if (modeText) modeText.text = selectedLang == "en" ? "模式 EN" : "模式 JP";
         if (playerHpText) playerHpText.text = "生命 " + playerHp + "/" + playerMaxHp;
+        if (playerHpBarText) playerHpBarText.text = "玩家生命 " + playerHp + "/" + playerMaxHp;
         if (growthText) growthText.text = "Lv" + level + "  XP " + xp + "/" + (level * 60) + "  金币 " + gold + "  提示 " + hintCharges;
         if (relicText) relicText.text = "遗物: " + RelicSummary();
-        if (enemyHPText) enemyHPText.text = currentEnemy.name + "  " + currentEnemy.hp + "/" + currentEnemy.maxHp;
+        if (enemyHPText) enemyHPText.text = currentEnemy.name;
+        if (enemyHpBarText) enemyHpBarText.text = currentEnemy.name + "  " + currentEnemy.hp + "/" + currentEnemy.maxHp;
         if (enemyMetaText && currentEnemyTemplate != null)
-            enemyMetaText.text = currentEnemyTemplate.faction + "  Tier " + currentEnemyTemplate.tier + "  " + RuleLabel(CurrentRule());
+            enemyMetaText.text = RuleDescription(CurrentRule());
 
         enemyHpTarget = currentEnemy.maxHp > 0 ? Mathf.Clamp01((float)currentEnemy.hp / currentEnemy.maxHp) : 0f;
         playerHpTarget = playerMaxHp > 0 ? Mathf.Clamp01((float)playerHp / playerMaxHp) : 0f;
@@ -1406,18 +1544,45 @@ public class GameManager : MonoBehaviour
 
         float limit = Mathf.Max(1f, currentQuestionLimit > 0f ? currentQuestionLimit : questionTimeLimit - Mathf.Min(5f, kills * 0.3f));
         timerTarget = Mathf.Clamp01(timeLeft / limit);
-        timerFill.color = timerTarget < 0.25f ? RuntimeUI.Coral : RuntimeUI.Teal;
+        timerFill.color = timerTarget < 0.25f ? RuntimeUI.Coral : RuntimeUI.Hex("56B8FF");
     }
 
     private void SmoothBars()
     {
-        float speed = Time.deltaTime * 6f;
-        if (enemyHpFill)
-            enemyHpFill.fillAmount = Mathf.MoveTowards(enemyHpFill.fillAmount, enemyHpTarget, speed);
-        if (playerHpFill)
-            playerHpFill.fillAmount = Mathf.MoveTowards(playerHpFill.fillAmount, playerHpTarget, speed);
+        float speed = Time.deltaTime * 9f;
+        float trailSpeed = Time.deltaTime * 1.7f;
+        enemyHpVisible = Mathf.MoveTowards(enemyHpVisible, enemyHpTarget, speed);
+        enemyHpTrailVisible = enemyHpTrailVisible < enemyHpTarget ? enemyHpTarget : Mathf.MoveTowards(enemyHpTrailVisible, enemyHpTarget, trailSpeed);
+        playerHpVisible = Mathf.MoveTowards(playerHpVisible, playerHpTarget, speed);
+        playerHpTrailVisible = playerHpTrailVisible < playerHpTarget ? playerHpTarget : Mathf.MoveTowards(playerHpTrailVisible, playerHpTarget, trailSpeed);
+        SetBarWidth(enemyHpFillRect, enemyHpVisible);
+        SetBarWidth(enemyHpTrailFillRect, enemyHpTrailVisible);
+        SetBarWidth(playerHpFillRect, playerHpVisible);
+        SetBarWidth(playerHpTrailFillRect, playerHpTrailVisible);
         if (timerFill)
             timerFill.fillAmount = Mathf.MoveTowards(timerFill.fillAmount, timerTarget, Time.deltaTime * 10f);
+    }
+
+    private void SetBarWidth(RectTransform fill, float value)
+    {
+        if (fill == null)
+            return;
+
+        Vector2 max = fill.anchorMax;
+        max.x = Mathf.Clamp01(value);
+        fill.anchorMax = max;
+        fill.offsetMin = Vector2.zero;
+        fill.offsetMax = Vector2.zero;
+    }
+
+    private void SnapPlayerHpBar()
+    {
+        float value = playerMaxHp > 0 ? Mathf.Clamp01((float)playerHp / playerMaxHp) : 0f;
+        playerHpTarget = value;
+        playerHpVisible = value;
+        playerHpTrailVisible = value;
+        SetBarWidth(playerHpFillRect, value);
+        SetBarWidth(playerHpTrailFillRect, value);
     }
 
     private void SetPlayInteractable(bool value)
@@ -1599,10 +1764,10 @@ public class GameManager : MonoBehaviour
 
         for (int depth = 0; depth < depthCount; depth++)
         {
-            int rowCount = depth == depthCount - 1 ? 1 : rows;
-            for (int i = 0; i < rowCount; i++)
+            List<int> activeRows = PickRowsForDepth(depth, depthCount, rows, bossRow, rng);
+            for (int i = 0; i < activeRows.Count; i++)
             {
-                int row = depth == depthCount - 1 ? bossRow : i;
+                int row = activeRows[i];
                 nodes.Add(new MapNode { id = NodeId(depth, row), depth = depth, row = row, type = PickNodeType(depth, depthCount, rng) });
             }
         }
@@ -1615,20 +1780,87 @@ public class GameManager : MonoBehaviour
 
             int nextDepth = node.depth + 1;
             bool nextIsBoss = nextDepth == depthCount - 1;
+            List<MapNode> nextNodes = NodesAtDepth(nodes, nextDepth);
+            if (nextNodes.Count == 0)
+                continue;
             List<string> nextIds = new List<string>();
-            int primaryRow = nextIsBoss ? bossRow : Mathf.Clamp(node.row + rng.Next(-1, 2), 0, rows - 1);
-            nextIds.Add(NodeId(nextDepth, primaryRow));
-            if (!nextIsBoss && rng.NextDouble() < 0.42)
+            MapNode primary = nextIsBoss ? ClosestNode(nextNodes, bossRow) : ClosestNode(nextNodes, Mathf.Clamp(node.row + rng.Next(-1, 2), 0, rows - 1));
+            nextIds.Add(primary.id);
+            if (!nextIsBoss && rng.NextDouble() < 0.12 && nextNodes.Count > 1)
             {
-                int extraRow = Mathf.Clamp(primaryRow + (rng.NextDouble() < 0.5 ? -1 : 1), 0, rows - 1);
-                string extraId = NodeId(nextDepth, extraRow);
-                if (!nextIds.Contains(extraId))
-                    nextIds.Add(extraId);
+                MapNode extra = nextNodes[rng.Next(0, nextNodes.Count)];
+                if (!nextIds.Contains(extra.id))
+                    nextIds.Add(extra.id);
             }
             node.nextCsv = string.Join(",", nextIds.ToArray());
         }
 
         return nodes.ToArray();
+    }
+
+    private List<int> PickRowsForDepth(int depth, int depthCount, int rows, int bossRow, System.Random rng)
+    {
+        List<int> result = new List<int>();
+        if (depth == depthCount - 1)
+        {
+            result.Add(bossRow);
+            return result;
+        }
+
+        if (depth == 0)
+        {
+            result.Add(Mathf.Clamp(bossRow - 1, 0, rows - 1));
+            result.Add(bossRow);
+            return UniqueRows(result);
+        }
+
+        int count = depth < 3 ? 2 : (rng.NextDouble() < 0.86 ? 2 : 3);
+        while (result.Count < count)
+        {
+            int row = rng.Next(0, rows);
+            if (!result.Contains(row))
+                result.Add(row);
+        }
+        result.Sort();
+        return result;
+    }
+
+    private List<int> UniqueRows(List<int> rows)
+    {
+        List<int> result = new List<int>();
+        for (int i = 0; i < rows.Count; i++)
+        {
+            if (!result.Contains(rows[i]))
+                result.Add(rows[i]);
+        }
+        return result;
+    }
+
+    private List<MapNode> NodesAtDepth(List<MapNode> nodes, int depth)
+    {
+        List<MapNode> result = new List<MapNode>();
+        for (int i = 0; i < nodes.Count; i++)
+        {
+            if (nodes[i].depth == depth)
+                result.Add(nodes[i]);
+        }
+        return result;
+    }
+
+    private MapNode ClosestNode(List<MapNode> nodes, int row)
+    {
+        MapNode best = nodes[0];
+        int bestDistance = Mathf.Abs(best.row - row);
+        for (int i = 1; i < nodes.Count; i++)
+        {
+            int distance = Mathf.Abs(nodes[i].row - row);
+            if (distance < bestDistance)
+            {
+                best = nodes[i];
+                bestDistance = distance;
+            }
+        }
+        return best;
     }
 
     private MapNodeType PickNodeType(int depth, int depthCount, System.Random rng)
@@ -1658,11 +1890,13 @@ public class GameManager : MonoBehaviour
         if (mapRoot == null)
             return;
 
+        TooltipTrigger.HideAll();
         mapRoot.SetActive(true);
         SetPlayInteractable(false);
         if (nextButton) nextButton.interactable = false;
         if (mapTitleText) mapTitleText.text = routeComplete ? "路线完成" : "选择路线";
         if (mapStatusText) mapStatusText.text = status + "  |  " + LongTermProgress.Summary();
+        Canvas.ForceUpdateCanvases();
         RebuildMapNodes();
     }
 
@@ -1695,35 +1929,116 @@ public class GameManager : MonoBehaviour
             MapNode node = runMap[i];
             bool completed = completedNodes.Contains(node.id);
             bool reachable = IsReachable(node);
-            Color color = completed ? RuntimeUI.Hex("4B6B57") : (reachable ? NodeColor(node.type) : RuntimeUI.Hex("283142"));
-            Button button = RuntimeUI.Button(mapContent, "Node " + node.id, completed ? "已完成" : MapNodeTypeLabel(node.type), color, Color.white);
+            bool hidden = hideUnvisitedMapNodes && !completed && node.type != MapNodeType.Boss;
+            Button button = CreateMapStampButton(node, completed, reachable, hidden);
             RectTransform rt = button.GetComponent<RectTransform>();
-            float x = depthCount <= 1 ? 0.5f : Mathf.Lerp(0.07f, 0.93f, (float)node.depth / (depthCount - 1));
-            float y = rows <= 1 ? 0.5f : Mathf.Lerp(0.20f, 0.80f, (float)node.row / (rows - 1));
-            rt.anchorMin = new Vector2(x, y);
-            rt.anchorMax = new Vector2(x, y);
-            rt.sizeDelta = node.type == MapNodeType.Boss ? new Vector2(156, 88) : new Vector2(132, 74);
-            rt.anchoredPosition = Vector2.zero;
+            Vector2 pos = MapLocalPosition(node);
+            rt.anchorMin = new Vector2(0.5f, 0.5f);
+            rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = node.type == MapNodeType.Boss ? new Vector2(120, 120) : new Vector2(82, 82);
+            rt.anchoredPosition = pos;
             button.interactable = reachable && !completed && !routeComplete;
             MapNode captured = node;
             button.onClick.AddListener(() => SelectMapNode(captured));
+            AddTooltip(button, MapNodeTypeLabel(node.type));
         }
+    }
+
+    private Button CreateMapStampButton(MapNode node, bool completed, bool reachable, bool hidden)
+    {
+        GameObject go = new GameObject("Node " + node.id, typeof(RectTransform), typeof(Image), typeof(Button));
+        go.transform.SetParent(mapContent, false);
+        Image hitArea = go.GetComponent<Image>();
+        hitArea.color = new Color(0f, 0f, 0f, 0f);
+
+        Button button = go.GetComponent<Button>();
+        button.targetGraphic = null;
+
+        RawImage stamp = RuntimeUI.RawImage(go.transform, "Stamp", mapStampTexture);
+        stamp.raycastTarget = false;
+        stamp.uvRect = StampUv(StampIndex(node, completed, hidden));
+        stamp.color = completed ? new Color(0.88f, 0.72f, 0.42f, 1f) : (reachable ? new Color(1f, 0.97f, 0.86f, 1f) : new Color(0.30f, 0.27f, 0.20f, 0.84f));
+        RuntimeUI.SetRect(stamp, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+
+        if (completed || reachable || node.type == MapNodeType.Boss)
+        {
+            TMP_Text label = RuntimeUI.Text(go.transform, "Stamp Label", MapNodeLabel(node, completed, false), 18, RuntimeUI.Paper, TextAlignmentOptions.Center);
+            label.raycastTarget = false;
+            RuntimeUI.SetRect(label, new Vector2(0f, -0.24f), new Vector2(1f, 0.12f), Vector2.zero, Vector2.zero);
+        }
+
+        return button;
+    }
+
+    private int StampIndex(MapNode node, bool completed, bool hidden)
+    {
+        if (node == null)
+            return 9;
+
+        switch (node.type)
+        {
+            case MapNodeType.Elite:
+                return 3;
+            case MapNodeType.Rest:
+                return 5;
+            case MapNodeType.Shop:
+                return 4;
+            case MapNodeType.Event:
+                return 8;
+            case MapNodeType.Chest:
+                return 7;
+            case MapNodeType.Review:
+                return 6;
+            case MapNodeType.Boss:
+                return 5;
+            default:
+                return Mathf.Abs(node.depth + node.row) % 3;
+        }
+    }
+
+    private Rect StampUv(int index)
+    {
+        int columns = 5;
+        int rows = 2;
+        int col = Mathf.Clamp(index % columns, 0, columns - 1);
+        int row = Mathf.Clamp(index / columns, 0, rows - 1);
+        float width = 1f / columns;
+        float height = 1f / rows;
+        float y = row == 0 ? height : 0f;
+        return new Rect(col * width, y, width, height);
     }
 
     private void CreateMapLine(MapNode from, MapNode to, bool active)
     {
-        Image line = RuntimeUI.Panel(mapContent, "Path", active ? new Color(0.93f, 0.75f, 0.35f, 0.78f) : new Color(0.55f, 0.61f, 0.70f, 0.22f), Vector2.zero, Vector2.zero, Vector2.zero, Vector2.zero);
-        line.raycastTarget = false;
-        RectTransform rt = line.GetComponent<RectTransform>();
         Vector2 a = MapLocalPosition(from);
         Vector2 b = MapLocalPosition(to);
-        Vector2 delta = b - a;
-        rt.anchorMin = new Vector2(0.5f, 0.5f);
-        rt.anchorMax = new Vector2(0.5f, 0.5f);
-        rt.pivot = new Vector2(0.5f, 0.5f);
-        rt.anchoredPosition = (a + b) * 0.5f;
-        rt.sizeDelta = new Vector2(delta.magnitude, active ? 7f : 5f);
-        rt.localRotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(delta.y, delta.x) * Mathf.Rad2Deg);
+        Vector2 mid = (a + b) * 0.5f + new Vector2(0f, StableNoise(from.depth + to.depth, from.row - to.row) * 10f);
+        float distance = Vector2.Distance(a, b);
+        int dots = Mathf.Clamp(Mathf.RoundToInt(distance / 92f), 3, 7);
+        Color color = active ? new Color(0.13f, 0.11f, 0.09f, 0.86f) : new Color(0.15f, 0.14f, 0.12f, 0.46f);
+
+        for (int i = 1; i < dots; i++)
+        {
+            float t = (float)i / dots;
+            Vector2 p = Quadratic(a, mid, b, t);
+            GameObject dot = new GameObject("Path Dot", typeof(RectTransform), typeof(Image));
+            dot.transform.SetParent(mapContent, false);
+            Image image = dot.GetComponent<Image>();
+            image.color = color;
+            image.raycastTarget = false;
+            RectTransform rt = dot.GetComponent<RectTransform>();
+            rt.anchorMin = new Vector2(0.5f, 0.5f);
+            rt.anchorMax = new Vector2(0.5f, 0.5f);
+            float size = active ? 7f : 5f;
+            rt.sizeDelta = new Vector2(size, size);
+            rt.anchoredPosition = p;
+        }
+    }
+
+    private Vector2 Quadratic(Vector2 a, Vector2 b, Vector2 c, float t)
+    {
+        float u = 1f - t;
+        return u * u * a + 2f * u * t * b + t * t * c;
     }
 
     private Vector2 MapLocalPosition(MapNode node)
@@ -1735,9 +2050,22 @@ public class GameManager : MonoBehaviour
 
         int rows = Mathf.Max(2, mapRows);
         int depthCount = Mathf.Max(4, mapDepthCount);
-        float x = depthCount <= 1 ? 0.5f : Mathf.Lerp(0.07f, 0.93f, (float)node.depth / (depthCount - 1));
-        float y = rows <= 1 ? 0.5f : Mathf.Lerp(0.20f, 0.80f, (float)node.row / (rows - 1));
+        float x = depthCount <= 1 ? 0.5f : Mathf.Lerp(0.18f, 0.88f, (float)node.depth / (depthCount - 1));
+        float y = rows <= 1 ? 0.5f : Mathf.Lerp(0.26f, 0.74f, (float)node.row / (rows - 1));
+        if (node.depth > 0 && node.depth < depthCount - 1)
+        {
+            x += StableNoise(node.depth, node.row) * 0.006f;
+            y += StableNoise(node.row, node.depth) * 0.022f;
+        }
+        x = Mathf.Clamp(x, 0.15f, 0.91f);
+        y = Mathf.Clamp(y, 0.20f, 0.80f);
         return new Vector2((x - 0.5f) * size.x, (y - 0.5f) * size.y);
+    }
+
+    private float StableNoise(int a, int b)
+    {
+        float value = Mathf.Sin((currentSeed * 0.0137f + a * 12.9898f + b * 78.233f) * 43758.5453f);
+        return Mathf.Repeat(value, 1f) * 2f - 1f;
     }
 
     private bool IsReachable(MapNode node)
@@ -1797,6 +2125,17 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private string MapNodeLabel(MapNode node, bool completed, bool hidden)
+    {
+        if (node == null)
+            return "?";
+        if (completed)
+            return MapNodeTypeLabel(node.type) + "\n已完成";
+        if (node.type == MapNodeType.Boss)
+            return "深处";
+        return hidden ? "未知" : MapNodeTypeLabel(node.type);
+    }
+
     private string MapNodeTypeLabel(MapNodeType type)
     {
         switch (type)
@@ -1837,7 +2176,16 @@ public class GameManager : MonoBehaviour
 
     private string FormatCurrentAnswers()
     {
+        if (wordDb != null && currentEntry != null)
+            return wordDb.GetDisplayAnswer(currentEntry);
         return currentAnswers != null && currentAnswers.Length > 0 ? string.Join(" / ", currentAnswers) : "没有答案";
+    }
+
+    private string GetCurrentHintAnswer()
+    {
+        if (wordDb != null && currentEntry != null)
+            return wordDb.GetHintAnswer(currentEntry);
+        return currentAnswers != null && currentAnswers.Length > 0 ? currentAnswers[0] : "";
     }
 
     private void RestartGame()
@@ -1859,6 +2207,37 @@ public class GameManager : MonoBehaviour
             wordDb = new GameObject("WordDatabase").AddComponent<WordDatabase>();
         if (WrongBook.Instance == null && FindObjectOfType<WrongBook>() == null)
             new GameObject("WrongBook").AddComponent<WrongBook>();
+    }
+
+    private void StartBackgroundMusic()
+    {
+        if (string.IsNullOrWhiteSpace(backgroundMusicResource))
+            return;
+
+        GameObject existing = GameObject.Find("WordQuest BGM");
+        if (existing != null)
+        {
+            musicSource = existing.GetComponent<AudioSource>();
+            if (musicSource != null && !musicSource.isPlaying)
+                musicSource.Play();
+            return;
+        }
+
+        AudioClip clip = Resources.Load<AudioClip>(backgroundMusicResource);
+        if (clip == null)
+        {
+            Debug.LogWarning("Background music not found: " + backgroundMusicResource);
+            return;
+        }
+
+        GameObject go = new GameObject("WordQuest BGM");
+        DontDestroyOnLoad(go);
+        musicSource = go.AddComponent<AudioSource>();
+        musicSource.clip = clip;
+        musicSource.loop = true;
+        musicSource.playOnAwake = false;
+        musicSource.volume = Mathf.Clamp01(backgroundMusicVolume);
+        musicSource.Play();
     }
 
     private void EnsureEnemyTemplates()
@@ -1902,7 +2281,7 @@ public class GameManager : MonoBehaviour
             playerMaxHp = playerMaxHp,
             playerHp = playerHp,
             completedCsv = string.Join(",", new List<string>(completedNodes).ToArray()),
-            relicCsv = string.Join(",", new List<string>(relics).ToArray())
+            relicCsv = string.Join(",", relicSlots.ToArray())
         };
         PlayerPrefs.SetString(ProgressKey, JsonUtility.ToJson(progress));
         PlayerPrefs.Save();
@@ -1930,8 +2309,10 @@ public class GameManager : MonoBehaviour
         nextBattleTimePenalty = progress.nextBattleTimePenalty;
         playerMaxHp = progress.playerMaxHp > 0 ? progress.playerMaxHp : startPlayerMaxHp;
         playerHp = Mathf.Clamp(progress.playerHp, 1, playerMaxHp);
+        SnapPlayerHpBar();
         completedNodes = ParseCompleted(progress.completedCsv);
-        relics = ParseCsvSet(progress.relicCsv);
+        relicSlots = ParseCsvList(progress.relicCsv);
+        relics = new HashSet<string>(relicSlots);
         runMap = GenerateMap(currentSeed);
         routeComplete = false;
         waitingNext = false;
@@ -1959,6 +2340,23 @@ public class GameManager : MonoBehaviour
                 set.Add(parts[i]);
         }
         return set;
+    }
+
+    private List<string> ParseCsvList(string csv)
+    {
+        List<string> list = new List<string>();
+        if (string.IsNullOrWhiteSpace(csv))
+            return list;
+
+        string[] parts = csv.Split(',');
+        int limit = Mathf.Max(1, maxRelicSlots);
+        for (int i = 0; i < parts.Length && list.Count < limit; i++)
+        {
+            string value = parts[i].Trim();
+            if (!string.IsNullOrWhiteSpace(value) && !list.Contains(value))
+                list.Add(value);
+        }
+        return list;
     }
 
     private void ClearProgress()

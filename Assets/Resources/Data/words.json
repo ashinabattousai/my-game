@@ -1,0 +1,2599 @@
+﻿{
+    "version":  2,
+    "entries":  [
+                    {
+                        "id":  "jp_n5_noun_0001",
+                        "lang":  "jp",
+                        "prompt":  "樱花",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "sakura",
+                        "answers":  [
+                                        "sakura",
+                                        "さくら",
+                                        "桜"
+                                    ],
+                        "displayAnswer":  "さくら / 桜 / sakura",
+                        "kana":  "さくら",
+                        "kanji":  "桜",
+                        "romaji":  [
+                                       "sakura"
+                                   ],
+                        "meaning":  [
+                                        "樱花"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "N5",
+                        "tags":  [
+                                     "基础词",
+                                     "自然",
+                                     "N5",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_foundation"
+                    },
+                    {
+                        "id":  "jp_n5_noun_0002",
+                        "lang":  "jp",
+                        "prompt":  "早上好",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "ohayou",
+                        "answers":  [
+                                        "ohayou",
+                                        "おはよう",
+                                        "おはようございます"
+                                    ],
+                        "displayAnswer":  "おはよう / ohayou / おはようございます",
+                        "kana":  "おはよう",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "ohayou"
+                                   ],
+                        "meaning":  [
+                                        "早上好"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "N5",
+                        "tags":  [
+                                     "基础词",
+                                     "常用词",
+                                     "N5",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_foundation"
+                    },
+                    {
+                        "id":  "jp_n5_noun_0003",
+                        "lang":  "jp",
+                        "prompt":  "谢谢",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "arigatou",
+                        "answers":  [
+                                        "arigatou",
+                                        "ありがとう",
+                                        "ありがとうございます"
+                                    ],
+                        "displayAnswer":  "ありがとう / arigatou / ありがとうございます",
+                        "kana":  "ありがとう",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "arigatou"
+                                   ],
+                        "meaning":  [
+                                        "谢谢"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "N5",
+                        "tags":  [
+                                     "基础词",
+                                     "常用词",
+                                     "N5",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_foundation"
+                    },
+                    {
+                        "id":  "jp_n5_noun_0004",
+                        "lang":  "jp",
+                        "prompt":  "水",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "mizu",
+                        "answers":  [
+                                        "mizu",
+                                        "みず",
+                                        "水"
+                                    ],
+                        "displayAnswer":  "みず / 水 / mizu",
+                        "kana":  "みず",
+                        "kanji":  "水",
+                        "romaji":  [
+                                       "mizu"
+                                   ],
+                        "meaning":  [
+                                        "水"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "N5",
+                        "tags":  [
+                                     "基础词",
+                                     "自然",
+                                     "N5",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_foundation"
+                    },
+                    {
+                        "id":  "jp_n5_noun_0005",
+                        "lang":  "jp",
+                        "prompt":  "火",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "hi",
+                        "answers":  [
+                                        "hi",
+                                        "ひ",
+                                        "火"
+                                    ],
+                        "displayAnswer":  "ひ / 火 / hi",
+                        "kana":  "ひ",
+                        "kanji":  "火",
+                        "romaji":  [
+                                       "hi"
+                                   ],
+                        "meaning":  [
+                                        "火"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "N5",
+                        "tags":  [
+                                     "基础词",
+                                     "自然",
+                                     "N5",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_foundation"
+                    },
+                    {
+                        "id":  "jp_n5_noun_0006",
+                        "lang":  "jp",
+                        "prompt":  "月亮",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "tsuki",
+                        "answers":  [
+                                        "tsuki",
+                                        "つき",
+                                        "月"
+                                    ],
+                        "displayAnswer":  "つき / 月 / tsuki",
+                        "kana":  "つき",
+                        "kanji":  "月",
+                        "romaji":  [
+                                       "tsuki"
+                                   ],
+                        "meaning":  [
+                                        "月亮"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "N5",
+                        "tags":  [
+                                     "基础词",
+                                     "自然",
+                                     "N5",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_foundation"
+                    },
+                    {
+                        "id":  "jp_n5_noun_0007",
+                        "lang":  "jp",
+                        "prompt":  "星星",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "hoshi",
+                        "answers":  [
+                                        "hoshi",
+                                        "ほし",
+                                        "星"
+                                    ],
+                        "displayAnswer":  "ほし / 星 / hoshi",
+                        "kana":  "ほし",
+                        "kanji":  "星",
+                        "romaji":  [
+                                       "hoshi"
+                                   ],
+                        "meaning":  [
+                                        "星星"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "N5",
+                        "tags":  [
+                                     "基础词",
+                                     "自然",
+                                     "N5",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_foundation"
+                    },
+                    {
+                        "id":  "jp_n5_noun_0008",
+                        "lang":  "jp",
+                        "prompt":  "学校",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "gakkou",
+                        "answers":  [
+                                        "gakkou",
+                                        "がっこう",
+                                        "学校"
+                                    ],
+                        "displayAnswer":  "がっこう / 学校 / gakkou",
+                        "kana":  "がっこう",
+                        "kanji":  "学校",
+                        "romaji":  [
+                                       "gakkou"
+                                   ],
+                        "meaning":  [
+                                        "学校"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "N5",
+                        "tags":  [
+                                     "基础词",
+                                     "学校",
+                                     "N5",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_foundation"
+                    },
+                    {
+                        "id":  "jp_n5_noun_0009",
+                        "lang":  "jp",
+                        "prompt":  "老师",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "sensei",
+                        "answers":  [
+                                        "sensei",
+                                        "せんせい",
+                                        "先生"
+                                    ],
+                        "displayAnswer":  "せんせい / 先生 / sensei",
+                        "kana":  "せんせい",
+                        "kanji":  "先生",
+                        "romaji":  [
+                                       "sensei"
+                                   ],
+                        "meaning":  [
+                                        "老师"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "N5",
+                        "tags":  [
+                                     "基础词",
+                                     "学校",
+                                     "N5",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_foundation"
+                    },
+                    {
+                        "id":  "jp_n5_noun_0010",
+                        "lang":  "jp",
+                        "prompt":  "朋友",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "tomodachi",
+                        "answers":  [
+                                        "tomodachi",
+                                        "ともだち",
+                                        "友達"
+                                    ],
+                        "displayAnswer":  "ともだち / 友達 / tomodachi",
+                        "kana":  "ともだち",
+                        "kanji":  "友達",
+                        "romaji":  [
+                                       "tomodachi"
+                                   ],
+                        "meaning":  [
+                                        "朋友"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "N5",
+                        "tags":  [
+                                     "基础词",
+                                     "学校",
+                                     "N5",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_foundation"
+                    },
+                    {
+                        "id":  "jp_n5_noun_0011",
+                        "lang":  "jp",
+                        "prompt":  "苹果",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "ringo",
+                        "answers":  [
+                                        "ringo",
+                                        "りんご",
+                                        "林檎"
+                                    ],
+                        "displayAnswer":  "りんご / 林檎 / ringo",
+                        "kana":  "りんご",
+                        "kanji":  "林檎",
+                        "romaji":  [
+                                       "ringo"
+                                   ],
+                        "meaning":  [
+                                        "苹果"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "N5",
+                        "tags":  [
+                                     "基础词",
+                                     "自然",
+                                     "N5",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_foundation"
+                    },
+                    {
+                        "id":  "jp_n5_noun_0012",
+                        "lang":  "jp",
+                        "prompt":  "猫",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "neko",
+                        "answers":  [
+                                        "neko",
+                                        "ねこ",
+                                        "猫"
+                                    ],
+                        "displayAnswer":  "ねこ / 猫 / neko",
+                        "kana":  "ねこ",
+                        "kanji":  "猫",
+                        "romaji":  [
+                                       "neko"
+                                   ],
+                        "meaning":  [
+                                        "猫"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "N5",
+                        "tags":  [
+                                     "基础词",
+                                     "自然",
+                                     "N5",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_foundation"
+                    },
+                    {
+                        "id":  "jp_n5_noun_0013",
+                        "lang":  "jp",
+                        "prompt":  "狗",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "inu",
+                        "answers":  [
+                                        "inu",
+                                        "いぬ",
+                                        "犬"
+                                    ],
+                        "displayAnswer":  "いぬ / 犬 / inu",
+                        "kana":  "いぬ",
+                        "kanji":  "犬",
+                        "romaji":  [
+                                       "inu"
+                                   ],
+                        "meaning":  [
+                                        "狗"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "N5",
+                        "tags":  [
+                                     "基础词",
+                                     "自然",
+                                     "N5",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_foundation"
+                    },
+                    {
+                        "id":  "jp_n5_noun_0014",
+                        "lang":  "jp",
+                        "prompt":  "书",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "hon",
+                        "answers":  [
+                                        "hon",
+                                        "ほん",
+                                        "本"
+                                    ],
+                        "displayAnswer":  "ほん / 本 / hon",
+                        "kana":  "ほん",
+                        "kanji":  "本",
+                        "romaji":  [
+                                       "hon"
+                                   ],
+                        "meaning":  [
+                                        "书"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "N5",
+                        "tags":  [
+                                     "基础词",
+                                     "学校",
+                                     "N5",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_foundation"
+                    },
+                    {
+                        "id":  "jp_n5_noun_0015",
+                        "lang":  "jp",
+                        "prompt":  "电车",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "densha",
+                        "answers":  [
+                                        "densha",
+                                        "でんしゃ",
+                                        "電車"
+                                    ],
+                        "displayAnswer":  "でんしゃ / 電車 / densha",
+                        "kana":  "でんしゃ",
+                        "kanji":  "電車",
+                        "romaji":  [
+                                       "densha"
+                                   ],
+                        "meaning":  [
+                                        "电车"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "N5",
+                        "tags":  [
+                                     "基础词",
+                                     "学校",
+                                     "N5",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_foundation"
+                    },
+                    {
+                        "id":  "jp_n4_noun_0001",
+                        "lang":  "jp",
+                        "prompt":  "图书馆",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "toshokan",
+                        "answers":  [
+                                        "toshokan",
+                                        "としょかん",
+                                        "図書館"
+                                    ],
+                        "displayAnswer":  "としょかん / 図書館 / toshokan",
+                        "kana":  "としょかん",
+                        "kanji":  "図書館",
+                        "romaji":  [
+                                       "toshokan"
+                                   ],
+                        "meaning":  [
+                                        "图书馆"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  2,
+                        "level":  "N4",
+                        "tags":  [
+                                     "常用抽象词",
+                                     "学校",
+                                     "N4",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_common"
+                    },
+                    {
+                        "id":  "jp_n4_noun_0002",
+                        "lang":  "jp",
+                        "prompt":  "勇气",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "yuuki",
+                        "answers":  [
+                                        "yuuki",
+                                        "ゆうき",
+                                        "勇気"
+                                    ],
+                        "displayAnswer":  "ゆうき / 勇気 / yuuki",
+                        "kana":  "ゆうき",
+                        "kanji":  "勇気",
+                        "romaji":  [
+                                       "yuuki"
+                                   ],
+                        "meaning":  [
+                                        "勇气"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  2,
+                        "level":  "N4",
+                        "tags":  [
+                                     "常用抽象词",
+                                     "常用抽象词",
+                                     "N4",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_common"
+                    },
+                    {
+                        "id":  "jp_n4_noun_0003",
+                        "lang":  "jp",
+                        "prompt":  "练习",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "renshuu",
+                        "answers":  [
+                                        "renshuu",
+                                        "れんしゅう",
+                                        "練習"
+                                    ],
+                        "displayAnswer":  "れんしゅう / 練習 / renshuu",
+                        "kana":  "れんしゅう",
+                        "kanji":  "練習",
+                        "romaji":  [
+                                       "renshuu"
+                                   ],
+                        "meaning":  [
+                                        "练习"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  2,
+                        "level":  "N4",
+                        "tags":  [
+                                     "常用抽象词",
+                                     "学校",
+                                     "N4",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_common"
+                    },
+                    {
+                        "id":  "jp_n4_noun_0004",
+                        "lang":  "jp",
+                        "prompt":  "冒险",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "bouken",
+                        "answers":  [
+                                        "bouken",
+                                        "ぼうけん",
+                                        "冒険"
+                                    ],
+                        "displayAnswer":  "ぼうけん / 冒険 / bouken",
+                        "kana":  "ぼうけん",
+                        "kanji":  "冒険",
+                        "romaji":  [
+                                       "bouken"
+                                   ],
+                        "meaning":  [
+                                        "冒险"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  2,
+                        "level":  "N4",
+                        "tags":  [
+                                     "常用抽象词",
+                                     "常用抽象词",
+                                     "N4",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_common"
+                    },
+                    {
+                        "id":  "jp_n4_noun_0005",
+                        "lang":  "jp",
+                        "prompt":  "魔法",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "mahou",
+                        "answers":  [
+                                        "mahou",
+                                        "まほう",
+                                        "魔法"
+                                    ],
+                        "displayAnswer":  "まほう / 魔法 / mahou",
+                        "kana":  "まほう",
+                        "kanji":  "魔法",
+                        "romaji":  [
+                                       "mahou"
+                                   ],
+                        "meaning":  [
+                                        "魔法"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  2,
+                        "level":  "N4",
+                        "tags":  [
+                                     "常用抽象词",
+                                     "常用抽象词",
+                                     "N4",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_common"
+                    },
+                    {
+                        "id":  "jp_n4_noun_0006",
+                        "lang":  "jp",
+                        "prompt":  "战斗",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "sentou",
+                        "answers":  [
+                                        "sentou",
+                                        "せんとう",
+                                        "戦闘"
+                                    ],
+                        "displayAnswer":  "せんとう / 戦闘 / sentou",
+                        "kana":  "せんとう",
+                        "kanji":  "戦闘",
+                        "romaji":  [
+                                       "sentou"
+                                   ],
+                        "meaning":  [
+                                        "战斗"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  2,
+                        "level":  "N4",
+                        "tags":  [
+                                     "常用抽象词",
+                                     "常用抽象词",
+                                     "N4",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_common"
+                    },
+                    {
+                        "id":  "jp_n4_noun_0007",
+                        "lang":  "jp",
+                        "prompt":  "记忆",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "kioku",
+                        "answers":  [
+                                        "kioku",
+                                        "きおく",
+                                        "記憶"
+                                    ],
+                        "displayAnswer":  "きおく / 記憶 / kioku",
+                        "kana":  "きおく",
+                        "kanji":  "記憶",
+                        "romaji":  [
+                                       "kioku"
+                                   ],
+                        "meaning":  [
+                                        "记忆"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  2,
+                        "level":  "N4",
+                        "tags":  [
+                                     "常用抽象词",
+                                     "常用抽象词",
+                                     "N4",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_common"
+                    },
+                    {
+                        "id":  "jp_n4_noun_0008",
+                        "lang":  "jp",
+                        "prompt":  "选择",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "sentaku",
+                        "answers":  [
+                                        "sentaku",
+                                        "せんたく",
+                                        "選択"
+                                    ],
+                        "displayAnswer":  "せんたく / 選択 / sentaku",
+                        "kana":  "せんたく",
+                        "kanji":  "選択",
+                        "romaji":  [
+                                       "sentaku"
+                                   ],
+                        "meaning":  [
+                                        "选择"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  2,
+                        "level":  "N4",
+                        "tags":  [
+                                     "常用抽象词",
+                                     "常用抽象词",
+                                     "N4",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_common"
+                    },
+                    {
+                        "id":  "jp_n4_noun_0009",
+                        "lang":  "jp",
+                        "prompt":  "发现",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "hakken",
+                        "answers":  [
+                                        "hakken",
+                                        "はっけん",
+                                        "発見"
+                                    ],
+                        "displayAnswer":  "はっけん / 発見 / hakken",
+                        "kana":  "はっけん",
+                        "kanji":  "発見",
+                        "romaji":  [
+                                       "hakken"
+                                   ],
+                        "meaning":  [
+                                        "发现"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  2,
+                        "level":  "N4",
+                        "tags":  [
+                                     "常用抽象词",
+                                     "常用抽象词",
+                                     "N4",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_common"
+                    },
+                    {
+                        "id":  "jp_n4_noun_0010",
+                        "lang":  "jp",
+                        "prompt":  "安全",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "anzen",
+                        "answers":  [
+                                        "anzen",
+                                        "あんぜん",
+                                        "安全"
+                                    ],
+                        "displayAnswer":  "あんぜん / 安全 / anzen",
+                        "kana":  "あんぜん",
+                        "kanji":  "安全",
+                        "romaji":  [
+                                       "anzen"
+                                   ],
+                        "meaning":  [
+                                        "安全"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  2,
+                        "level":  "N4",
+                        "tags":  [
+                                     "常用抽象词",
+                                     "常用抽象词",
+                                     "N4",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_common"
+                    },
+                    {
+                        "id":  "jp_n4_noun_0011",
+                        "lang":  "jp",
+                        "prompt":  "危险",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "kiken",
+                        "answers":  [
+                                        "kiken",
+                                        "きけん",
+                                        "危険"
+                                    ],
+                        "displayAnswer":  "きけん / 危険 / kiken",
+                        "kana":  "きけん",
+                        "kanji":  "危険",
+                        "romaji":  [
+                                       "kiken"
+                                   ],
+                        "meaning":  [
+                                        "危险"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  2,
+                        "level":  "N4",
+                        "tags":  [
+                                     "常用抽象词",
+                                     "常用抽象词",
+                                     "N4",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_common"
+                    },
+                    {
+                        "id":  "jp_n4_noun_0012",
+                        "lang":  "jp",
+                        "prompt":  "约定",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "yakusoku",
+                        "answers":  [
+                                        "yakusoku",
+                                        "やくそく",
+                                        "約束"
+                                    ],
+                        "displayAnswer":  "やくそく / 約束 / yakusoku",
+                        "kana":  "やくそく",
+                        "kanji":  "約束",
+                        "romaji":  [
+                                       "yakusoku"
+                                   ],
+                        "meaning":  [
+                                        "约定"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  2,
+                        "level":  "N4",
+                        "tags":  [
+                                     "常用抽象词",
+                                     "常用抽象词",
+                                     "N4",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_common"
+                    },
+                    {
+                        "id":  "jp_n4_noun_0013",
+                        "lang":  "jp",
+                        "prompt":  "希望",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "kibou",
+                        "answers":  [
+                                        "kibou",
+                                        "きぼう",
+                                        "希望"
+                                    ],
+                        "displayAnswer":  "きぼう / 希望 / kibou",
+                        "kana":  "きぼう",
+                        "kanji":  "希望",
+                        "romaji":  [
+                                       "kibou"
+                                   ],
+                        "meaning":  [
+                                        "希望"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  2,
+                        "level":  "N4",
+                        "tags":  [
+                                     "常用抽象词",
+                                     "常用抽象词",
+                                     "N4",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_common"
+                    },
+                    {
+                        "id":  "jp_n4_noun_0014",
+                        "lang":  "jp",
+                        "prompt":  "成长",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "seichou",
+                        "answers":  [
+                                        "seichou",
+                                        "せいちょう",
+                                        "成長"
+                                    ],
+                        "displayAnswer":  "せいちょう / 成長 / seichou",
+                        "kana":  "せいちょう",
+                        "kanji":  "成長",
+                        "romaji":  [
+                                       "seichou"
+                                   ],
+                        "meaning":  [
+                                        "成长"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  2,
+                        "level":  "N4",
+                        "tags":  [
+                                     "常用抽象词",
+                                     "常用抽象词",
+                                     "N4",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_common"
+                    },
+                    {
+                        "id":  "jp_n4_noun_0015",
+                        "lang":  "jp",
+                        "prompt":  "胜利",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "shouri",
+                        "answers":  [
+                                        "shouri",
+                                        "しょうり",
+                                        "勝利"
+                                    ],
+                        "displayAnswer":  "しょうり / 勝利 / shouri",
+                        "kana":  "しょうり",
+                        "kanji":  "勝利",
+                        "romaji":  [
+                                       "shouri"
+                                   ],
+                        "meaning":  [
+                                        "胜利"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  2,
+                        "level":  "N4",
+                        "tags":  [
+                                     "常用抽象词",
+                                     "常用抽象词",
+                                     "N4",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_common"
+                    },
+                    {
+                        "id":  "jp_n3_noun_0001",
+                        "lang":  "jp",
+                        "prompt":  "策略",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "senryaku",
+                        "answers":  [
+                                        "senryaku",
+                                        "せんりゃく",
+                                        "戦略"
+                                    ],
+                        "displayAnswer":  "せんりゃく / 戦略 / senryaku",
+                        "kana":  "せんりゃく",
+                        "kanji":  "戦略",
+                        "romaji":  [
+                                       "senryaku"
+                                   ],
+                        "meaning":  [
+                                        "策略"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  3,
+                        "level":  "N3",
+                        "tags":  [
+                                     "高阶抽象词",
+                                     "抽象词",
+                                     "N3",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_advanced"
+                    },
+                    {
+                        "id":  "jp_n3_noun_0002",
+                        "lang":  "jp",
+                        "prompt":  "想象",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "souzou",
+                        "answers":  [
+                                        "souzou",
+                                        "そうぞう",
+                                        "想像"
+                                    ],
+                        "displayAnswer":  "そうぞう / 想像 / souzou",
+                        "kana":  "そうぞう",
+                        "kanji":  "想像",
+                        "romaji":  [
+                                       "souzou"
+                                   ],
+                        "meaning":  [
+                                        "想象"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  3,
+                        "level":  "N3",
+                        "tags":  [
+                                     "高阶抽象词",
+                                     "抽象词",
+                                     "N3",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_advanced"
+                    },
+                    {
+                        "id":  "jp_n3_noun_0003",
+                        "lang":  "jp",
+                        "prompt":  "解释",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "setsumei",
+                        "answers":  [
+                                        "setsumei",
+                                        "せつめい",
+                                        "説明"
+                                    ],
+                        "displayAnswer":  "せつめい / 説明 / setsumei",
+                        "kana":  "せつめい",
+                        "kanji":  "説明",
+                        "romaji":  [
+                                       "setsumei"
+                                   ],
+                        "meaning":  [
+                                        "解释"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  3,
+                        "level":  "N3",
+                        "tags":  [
+                                     "高阶抽象词",
+                                     "抽象词",
+                                     "N3",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_advanced"
+                    },
+                    {
+                        "id":  "jp_n3_noun_0004",
+                        "lang":  "jp",
+                        "prompt":  "责任",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "sekinin",
+                        "answers":  [
+                                        "sekinin",
+                                        "せきにん",
+                                        "責任"
+                                    ],
+                        "displayAnswer":  "せきにん / 責任 / sekinin",
+                        "kana":  "せきにん",
+                        "kanji":  "責任",
+                        "romaji":  [
+                                       "sekinin"
+                                   ],
+                        "meaning":  [
+                                        "责任"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  3,
+                        "level":  "N3",
+                        "tags":  [
+                                     "高阶抽象词",
+                                     "抽象词",
+                                     "N3",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_advanced"
+                    },
+                    {
+                        "id":  "jp_n3_noun_0005",
+                        "lang":  "jp",
+                        "prompt":  "经验",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "keiken",
+                        "answers":  [
+                                        "keiken",
+                                        "けいけん",
+                                        "経験"
+                                    ],
+                        "displayAnswer":  "けいけん / 経験 / keiken",
+                        "kana":  "けいけん",
+                        "kanji":  "経験",
+                        "romaji":  [
+                                       "keiken"
+                                   ],
+                        "meaning":  [
+                                        "经验"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  3,
+                        "level":  "N3",
+                        "tags":  [
+                                     "高阶抽象词",
+                                     "抽象词",
+                                     "N3",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_advanced"
+                    },
+                    {
+                        "id":  "jp_n3_noun_0006",
+                        "lang":  "jp",
+                        "prompt":  "判断",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "handan",
+                        "answers":  [
+                                        "handan",
+                                        "はんだん",
+                                        "判断"
+                                    ],
+                        "displayAnswer":  "はんだん / 判断 / handan",
+                        "kana":  "はんだん",
+                        "kanji":  "判断",
+                        "romaji":  [
+                                       "handan"
+                                   ],
+                        "meaning":  [
+                                        "判断"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  3,
+                        "level":  "N3",
+                        "tags":  [
+                                     "高阶抽象词",
+                                     "抽象词",
+                                     "N3",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_advanced"
+                    },
+                    {
+                        "id":  "jp_n3_noun_0007",
+                        "lang":  "jp",
+                        "prompt":  "集中",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "shuuchuu",
+                        "answers":  [
+                                        "shuuchuu",
+                                        "しゅうちゅう",
+                                        "集中"
+                                    ],
+                        "displayAnswer":  "しゅうちゅう / 集中 / shuuchuu",
+                        "kana":  "しゅうちゅう",
+                        "kanji":  "集中",
+                        "romaji":  [
+                                       "shuuchuu"
+                                   ],
+                        "meaning":  [
+                                        "集中"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  3,
+                        "level":  "N3",
+                        "tags":  [
+                                     "高阶抽象词",
+                                     "抽象词",
+                                     "N3",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_advanced"
+                    },
+                    {
+                        "id":  "jp_n3_noun_0008",
+                        "lang":  "jp",
+                        "prompt":  "可能性",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "kanousei",
+                        "answers":  [
+                                        "kanousei",
+                                        "かのうせい",
+                                        "可能性"
+                                    ],
+                        "displayAnswer":  "かのうせい / 可能性 / kanousei",
+                        "kana":  "かのうせい",
+                        "kanji":  "可能性",
+                        "romaji":  [
+                                       "kanousei"
+                                   ],
+                        "meaning":  [
+                                        "可能性"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  3,
+                        "level":  "N3",
+                        "tags":  [
+                                     "高阶抽象词",
+                                     "抽象词",
+                                     "N3",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_advanced"
+                    },
+                    {
+                        "id":  "jp_n3_noun_0009",
+                        "lang":  "jp",
+                        "prompt":  "矛盾",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "mujun",
+                        "answers":  [
+                                        "mujun",
+                                        "むじゅん",
+                                        "矛盾"
+                                    ],
+                        "displayAnswer":  "むじゅん / 矛盾 / mujun",
+                        "kana":  "むじゅん",
+                        "kanji":  "矛盾",
+                        "romaji":  [
+                                       "mujun"
+                                   ],
+                        "meaning":  [
+                                        "矛盾"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  3,
+                        "level":  "N3",
+                        "tags":  [
+                                     "高阶抽象词",
+                                     "抽象词",
+                                     "N3",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_advanced"
+                    },
+                    {
+                        "id":  "jp_n3_noun_0010",
+                        "lang":  "jp",
+                        "prompt":  "改善",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "kaizen",
+                        "answers":  [
+                                        "kaizen",
+                                        "かいぜん",
+                                        "改善"
+                                    ],
+                        "displayAnswer":  "かいぜん / 改善 / kaizen",
+                        "kana":  "かいぜん",
+                        "kanji":  "改善",
+                        "romaji":  [
+                                       "kaizen"
+                                   ],
+                        "meaning":  [
+                                        "改善"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  3,
+                        "level":  "N3",
+                        "tags":  [
+                                     "高阶抽象词",
+                                     "抽象词",
+                                     "N3",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_advanced"
+                    },
+                    {
+                        "id":  "en_basic_noun_0001",
+                        "lang":  "en",
+                        "prompt":  "苹果",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "apple",
+                        "answers":  [
+                                        "apple"
+                                    ],
+                        "displayAnswer":  "apple",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "apple"
+                                   ],
+                        "meaning":  [
+                                        "苹果"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "A1",
+                        "tags":  [
+                                     "基础词",
+                                     "自然",
+                                     "A1",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_basic"
+                    },
+                    {
+                        "id":  "en_basic_noun_0002",
+                        "lang":  "en",
+                        "prompt":  "书",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "book",
+                        "answers":  [
+                                        "book"
+                                    ],
+                        "displayAnswer":  "book",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "book"
+                                   ],
+                        "meaning":  [
+                                        "书"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "A1",
+                        "tags":  [
+                                     "基础词",
+                                     "学校",
+                                     "A1",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_basic"
+                    },
+                    {
+                        "id":  "en_basic_noun_0003",
+                        "lang":  "en",
+                        "prompt":  "月亮",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "moon",
+                        "answers":  [
+                                        "moon"
+                                    ],
+                        "displayAnswer":  "moon",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "moon"
+                                   ],
+                        "meaning":  [
+                                        "月亮"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "A1",
+                        "tags":  [
+                                     "基础词",
+                                     "自然",
+                                     "A1",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_basic"
+                    },
+                    {
+                        "id":  "en_basic_noun_0004",
+                        "lang":  "en",
+                        "prompt":  "星星",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "star",
+                        "answers":  [
+                                        "star"
+                                    ],
+                        "displayAnswer":  "star",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "star"
+                                   ],
+                        "meaning":  [
+                                        "星星"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "A1",
+                        "tags":  [
+                                     "基础词",
+                                     "自然",
+                                     "A1",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_basic"
+                    },
+                    {
+                        "id":  "en_basic_noun_0005",
+                        "lang":  "en",
+                        "prompt":  "朋友",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "friend",
+                        "answers":  [
+                                        "friend"
+                                    ],
+                        "displayAnswer":  "friend",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "friend"
+                                   ],
+                        "meaning":  [
+                                        "朋友"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "A1",
+                        "tags":  [
+                                     "基础词",
+                                     "学校",
+                                     "A1",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_basic"
+                    },
+                    {
+                        "id":  "en_basic_noun_0006",
+                        "lang":  "en",
+                        "prompt":  "老师",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "teacher",
+                        "answers":  [
+                                        "teacher"
+                                    ],
+                        "displayAnswer":  "teacher",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "teacher"
+                                   ],
+                        "meaning":  [
+                                        "老师"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "A1",
+                        "tags":  [
+                                     "基础词",
+                                     "学校",
+                                     "A1",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_basic"
+                    },
+                    {
+                        "id":  "en_basic_noun_0007",
+                        "lang":  "en",
+                        "prompt":  "学校",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "school",
+                        "answers":  [
+                                        "school"
+                                    ],
+                        "displayAnswer":  "school",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "school"
+                                   ],
+                        "meaning":  [
+                                        "学校"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "A1",
+                        "tags":  [
+                                     "基础词",
+                                     "学校",
+                                     "A1",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_basic"
+                    },
+                    {
+                        "id":  "en_basic_noun_0008",
+                        "lang":  "en",
+                        "prompt":  "水",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "water",
+                        "answers":  [
+                                        "water"
+                                    ],
+                        "displayAnswer":  "water",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "water"
+                                   ],
+                        "meaning":  [
+                                        "水"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "A1",
+                        "tags":  [
+                                     "基础词",
+                                     "自然",
+                                     "A1",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_basic"
+                    },
+                    {
+                        "id":  "en_basic_noun_0009",
+                        "lang":  "en",
+                        "prompt":  "火",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "fire",
+                        "answers":  [
+                                        "fire"
+                                    ],
+                        "displayAnswer":  "fire",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "fire"
+                                   ],
+                        "meaning":  [
+                                        "火"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "A1",
+                        "tags":  [
+                                     "基础词",
+                                     "自然",
+                                     "A1",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_basic"
+                    },
+                    {
+                        "id":  "en_basic_noun_0010",
+                        "lang":  "en",
+                        "prompt":  "猫",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "cat",
+                        "answers":  [
+                                        "cat"
+                                    ],
+                        "displayAnswer":  "cat",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "cat"
+                                   ],
+                        "meaning":  [
+                                        "猫"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "A1",
+                        "tags":  [
+                                     "基础词",
+                                     "自然",
+                                     "A1",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_basic"
+                    },
+                    {
+                        "id":  "en_basic_noun_0011",
+                        "lang":  "en",
+                        "prompt":  "狗",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "dog",
+                        "answers":  [
+                                        "dog"
+                                    ],
+                        "displayAnswer":  "dog",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "dog"
+                                   ],
+                        "meaning":  [
+                                        "狗"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "A1",
+                        "tags":  [
+                                     "基础词",
+                                     "自然",
+                                     "A1",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_basic"
+                    },
+                    {
+                        "id":  "en_basic_noun_0012",
+                        "lang":  "en",
+                        "prompt":  "门",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "door",
+                        "answers":  [
+                                        "door"
+                                    ],
+                        "displayAnswer":  "door",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "door"
+                                   ],
+                        "meaning":  [
+                                        "门"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "A1",
+                        "tags":  [
+                                     "基础词",
+                                     "常用词",
+                                     "A1",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_basic"
+                    },
+                    {
+                        "id":  "en_mid_noun_0001",
+                        "lang":  "en",
+                        "prompt":  "图书馆",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "library",
+                        "answers":  [
+                                        "library"
+                                    ],
+                        "displayAnswer":  "library",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "library"
+                                   ],
+                        "meaning":  [
+                                        "图书馆"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  2,
+                        "level":  "A2",
+                        "tags":  [
+                                     "常用抽象词",
+                                     "学校",
+                                     "A2",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_mid"
+                    },
+                    {
+                        "id":  "en_mid_abstract_0001",
+                        "lang":  "en",
+                        "prompt":  "勇气",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "courage",
+                        "answers":  [
+                                        "courage"
+                                    ],
+                        "displayAnswer":  "courage",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "courage"
+                                   ],
+                        "meaning":  [
+                                        "勇气"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  2,
+                        "level":  "A2",
+                        "tags":  [
+                                     "常用抽象词",
+                                     "常用抽象词",
+                                     "A2",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_mid"
+                    },
+                    {
+                        "id":  "en_mid_abstract_0002",
+                        "lang":  "en",
+                        "prompt":  "练习",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "practice",
+                        "answers":  [
+                                        "practice"
+                                    ],
+                        "displayAnswer":  "practice",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "practice"
+                                   ],
+                        "meaning":  [
+                                        "练习"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  2,
+                        "level":  "A2",
+                        "tags":  [
+                                     "常用抽象词",
+                                     "学校",
+                                     "A2",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_mid"
+                    },
+                    {
+                        "id":  "en_mid_noun_0002",
+                        "lang":  "en",
+                        "prompt":  "答案",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "answer",
+                        "answers":  [
+                                        "answer"
+                                    ],
+                        "displayAnswer":  "answer",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "answer"
+                                   ],
+                        "meaning":  [
+                                        "答案"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  2,
+                        "level":  "A2",
+                        "tags":  [
+                                     "常用抽象词",
+                                     "学校",
+                                     "A2",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_mid"
+                    },
+                    {
+                        "id":  "en_mid_abstract_0003",
+                        "lang":  "en",
+                        "prompt":  "战斗",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "battle",
+                        "answers":  [
+                                        "battle"
+                                    ],
+                        "displayAnswer":  "battle",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "battle"
+                                   ],
+                        "meaning":  [
+                                        "战斗"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  2,
+                        "level":  "A2",
+                        "tags":  [
+                                     "常用抽象词",
+                                     "常用抽象词",
+                                     "A2",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_mid"
+                    },
+                    {
+                        "id":  "en_mid_abstract_0004",
+                        "lang":  "en",
+                        "prompt":  "胜利",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "victory",
+                        "answers":  [
+                                        "victory"
+                                    ],
+                        "displayAnswer":  "victory",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "victory"
+                                   ],
+                        "meaning":  [
+                                        "胜利"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  2,
+                        "level":  "A2",
+                        "tags":  [
+                                     "常用抽象词",
+                                     "常用抽象词",
+                                     "A2",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_mid"
+                    },
+                    {
+                        "id":  "en_mid_abstract_0005",
+                        "lang":  "en",
+                        "prompt":  "冒险",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "adventure",
+                        "answers":  [
+                                        "adventure"
+                                    ],
+                        "displayAnswer":  "adventure",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "adventure"
+                                   ],
+                        "meaning":  [
+                                        "冒险"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  2,
+                        "level":  "A2",
+                        "tags":  [
+                                     "常用抽象词",
+                                     "常用抽象词",
+                                     "A2",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_mid"
+                    },
+                    {
+                        "id":  "en_mid_abstract_0006",
+                        "lang":  "en",
+                        "prompt":  "魔法",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "magic",
+                        "answers":  [
+                                        "magic"
+                                    ],
+                        "displayAnswer":  "magic",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "magic"
+                                   ],
+                        "meaning":  [
+                                        "魔法"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  2,
+                        "level":  "A2",
+                        "tags":  [
+                                     "常用抽象词",
+                                     "常用抽象词",
+                                     "A2",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_mid"
+                    },
+                    {
+                        "id":  "en_mid_abstract_0007",
+                        "lang":  "en",
+                        "prompt":  "记忆",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "memory",
+                        "answers":  [
+                                        "memory"
+                                    ],
+                        "displayAnswer":  "memory",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "memory"
+                                   ],
+                        "meaning":  [
+                                        "记忆"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  2,
+                        "level":  "A2",
+                        "tags":  [
+                                     "常用抽象词",
+                                     "常用抽象词",
+                                     "A2",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_mid"
+                    },
+                    {
+                        "id":  "en_mid_abstract_0008",
+                        "lang":  "en",
+                        "prompt":  "选择",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "choice",
+                        "answers":  [
+                                        "choice",
+                                        "selection"
+                                    ],
+                        "displayAnswer":  "choice / selection",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "choice",
+                                       "selection"
+                                   ],
+                        "meaning":  [
+                                        "选择"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  2,
+                        "level":  "A2",
+                        "tags":  [
+                                     "常用抽象词",
+                                     "常用抽象词",
+                                     "A2",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_mid"
+                    },
+                    {
+                        "id":  "en_mid_abstract_0009",
+                        "lang":  "en",
+                        "prompt":  "危险",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "danger",
+                        "answers":  [
+                                        "danger"
+                                    ],
+                        "displayAnswer":  "danger",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "danger"
+                                   ],
+                        "meaning":  [
+                                        "危险"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  2,
+                        "level":  "A2",
+                        "tags":  [
+                                     "常用抽象词",
+                                     "常用抽象词",
+                                     "A2",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_mid"
+                    },
+                    {
+                        "id":  "en_mid_abstract_0010",
+                        "lang":  "en",
+                        "prompt":  "希望",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "hope",
+                        "answers":  [
+                                        "hope"
+                                    ],
+                        "displayAnswer":  "hope",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "hope"
+                                   ],
+                        "meaning":  [
+                                        "希望"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  2,
+                        "level":  "A2",
+                        "tags":  [
+                                     "常用抽象词",
+                                     "常用抽象词",
+                                     "A2",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_mid"
+                    },
+                    {
+                        "id":  "en_mid_abstract_0011",
+                        "lang":  "en",
+                        "prompt":  "发现",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "discovery",
+                        "answers":  [
+                                        "discovery"
+                                    ],
+                        "displayAnswer":  "discovery",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "discovery"
+                                   ],
+                        "meaning":  [
+                                        "发现"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  2,
+                        "level":  "A2",
+                        "tags":  [
+                                     "常用抽象词",
+                                     "常用抽象词",
+                                     "A2",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_mid"
+                    },
+                    {
+                        "id":  "en_mid_abstract_0012",
+                        "lang":  "en",
+                        "prompt":  "成长",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "growth",
+                        "answers":  [
+                                        "growth"
+                                    ],
+                        "displayAnswer":  "growth",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "growth"
+                                   ],
+                        "meaning":  [
+                                        "成长"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  2,
+                        "level":  "A2",
+                        "tags":  [
+                                     "常用抽象词",
+                                     "常用抽象词",
+                                     "A2",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_mid"
+                    },
+                    {
+                        "id":  "en_advanced_abstract_0001",
+                        "lang":  "en",
+                        "prompt":  "策略",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "strategy",
+                        "answers":  [
+                                        "strategy"
+                                    ],
+                        "displayAnswer":  "strategy",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "strategy"
+                                   ],
+                        "meaning":  [
+                                        "策略"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  3,
+                        "level":  "B1",
+                        "tags":  [
+                                     "高阶抽象词",
+                                     "抽象词",
+                                     "B1",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_advanced"
+                    },
+                    {
+                        "id":  "en_advanced_abstract_0002",
+                        "lang":  "en",
+                        "prompt":  "想象",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "imagination",
+                        "answers":  [
+                                        "imagination"
+                                    ],
+                        "displayAnswer":  "imagination",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "imagination"
+                                   ],
+                        "meaning":  [
+                                        "想象"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  3,
+                        "level":  "B1",
+                        "tags":  [
+                                     "高阶抽象词",
+                                     "抽象词",
+                                     "B1",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_advanced"
+                    },
+                    {
+                        "id":  "en_advanced_abstract_0003",
+                        "lang":  "en",
+                        "prompt":  "解释",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "explanation",
+                        "answers":  [
+                                        "explanation"
+                                    ],
+                        "displayAnswer":  "explanation",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "explanation"
+                                   ],
+                        "meaning":  [
+                                        "解释"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  3,
+                        "level":  "B1",
+                        "tags":  [
+                                     "高阶抽象词",
+                                     "抽象词",
+                                     "B1",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_advanced"
+                    },
+                    {
+                        "id":  "en_advanced_abstract_0004",
+                        "lang":  "en",
+                        "prompt":  "责任",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "responsibility",
+                        "answers":  [
+                                        "responsibility"
+                                    ],
+                        "displayAnswer":  "responsibility",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "responsibility"
+                                   ],
+                        "meaning":  [
+                                        "责任"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  3,
+                        "level":  "B1",
+                        "tags":  [
+                                     "高阶抽象词",
+                                     "抽象词",
+                                     "B1",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_advanced"
+                    },
+                    {
+                        "id":  "en_advanced_abstract_0005",
+                        "lang":  "en",
+                        "prompt":  "经验",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "experience",
+                        "answers":  [
+                                        "experience"
+                                    ],
+                        "displayAnswer":  "experience",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "experience"
+                                   ],
+                        "meaning":  [
+                                        "经验"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  3,
+                        "level":  "B1",
+                        "tags":  [
+                                     "高阶抽象词",
+                                     "抽象词",
+                                     "B1",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_advanced"
+                    },
+                    {
+                        "id":  "en_advanced_abstract_0006",
+                        "lang":  "en",
+                        "prompt":  "判断",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "judgment",
+                        "answers":  [
+                                        "judgment",
+                                        "judgement"
+                                    ],
+                        "displayAnswer":  "judgment / judgement",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "judgment",
+                                       "judgement"
+                                   ],
+                        "meaning":  [
+                                        "判断"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  3,
+                        "level":  "B1",
+                        "tags":  [
+                                     "高阶抽象词",
+                                     "抽象词",
+                                     "B1",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_advanced"
+                    },
+                    {
+                        "id":  "en_advanced_abstract_0007",
+                        "lang":  "en",
+                        "prompt":  "集中",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "concentration",
+                        "answers":  [
+                                        "concentration",
+                                        "focus"
+                                    ],
+                        "displayAnswer":  "concentration / focus",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "concentration",
+                                       "focus"
+                                   ],
+                        "meaning":  [
+                                        "集中"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  3,
+                        "level":  "B1",
+                        "tags":  [
+                                     "高阶抽象词",
+                                     "抽象词",
+                                     "B1",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_advanced"
+                    },
+                    {
+                        "id":  "en_advanced_abstract_0008",
+                        "lang":  "en",
+                        "prompt":  "可能性",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "possibility",
+                        "answers":  [
+                                        "possibility"
+                                    ],
+                        "displayAnswer":  "possibility",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "possibility"
+                                   ],
+                        "meaning":  [
+                                        "可能性"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  3,
+                        "level":  "B1",
+                        "tags":  [
+                                     "高阶抽象词",
+                                     "抽象词",
+                                     "B1",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_advanced"
+                    },
+                    {
+                        "id":  "en_advanced_abstract_0009",
+                        "lang":  "en",
+                        "prompt":  "矛盾",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "contradiction",
+                        "answers":  [
+                                        "contradiction"
+                                    ],
+                        "displayAnswer":  "contradiction",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "contradiction"
+                                   ],
+                        "meaning":  [
+                                        "矛盾"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  3,
+                        "level":  "B1",
+                        "tags":  [
+                                     "高阶抽象词",
+                                     "抽象词",
+                                     "B1",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_advanced"
+                    },
+                    {
+                        "id":  "en_advanced_abstract_0010",
+                        "lang":  "en",
+                        "prompt":  "改善",
+                        "answerMode":  "exact_text",
+                        "primaryAnswer":  "improvement",
+                        "answers":  [
+                                        "improvement"
+                                    ],
+                        "displayAnswer":  "improvement",
+                        "kana":  "",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "improvement"
+                                   ],
+                        "meaning":  [
+                                        "改善"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  3,
+                        "level":  "B1",
+                        "tags":  [
+                                     "高阶抽象词",
+                                     "抽象词",
+                                     "B1",
+                                     "英语"
+                                 ],
+                        "hint":  "先想英文拼写，再注意单词长度。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_english",
+                        "chapter":  "en_advanced"
+                    }
+                ]
+}

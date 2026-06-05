@@ -14,6 +14,7 @@ public static class RuntimeUI
     public static readonly Color Night = Hex("111D31");
 
     private static TMP_FontAsset uiFontAsset;
+    private static Sprite buttonPanelSprite;
 
     public static Canvas CreateCanvas(string name)
     {
@@ -166,25 +167,51 @@ public static class RuntimeUI
         GameObject go = new GameObject(name, typeof(RectTransform), typeof(Image), typeof(Button));
         go.transform.SetParent(parent, false);
         Image image = go.GetComponent<Image>();
-        image.color = color;
+        Sprite panelSprite = GetButtonPanelSprite();
+        if (panelSprite != null)
+        {
+            image.sprite = panelSprite;
+            image.type = Image.Type.Sliced;
+            image.pixelsPerUnitMultiplier = 1f;
+            image.color = Color.white;
+        }
+        else
+        {
+            image.color = color;
+        }
+
         Outline outline = go.AddComponent<Outline>();
-        outline.effectColor = new Color(0f, 0f, 0f, 0.30f);
-        outline.effectDistance = new Vector2(2f, -2f);
+        outline.effectColor = new Color(0f, 0f, 0f, panelSprite != null ? 0.12f : 0.30f);
+        outline.effectDistance = panelSprite != null ? new Vector2(1f, -1f) : new Vector2(2f, -2f);
         Shadow shadow = go.AddComponent<Shadow>();
-        shadow.effectColor = new Color(0f, 0f, 0f, 0.24f);
-        shadow.effectDistance = new Vector2(0f, -4f);
+        shadow.effectColor = new Color(0f, 0f, 0f, panelSprite != null ? 0.34f : 0.24f);
+        shadow.effectDistance = new Vector2(0f, panelSprite != null ? -3f : -4f);
 
         Button button = go.GetComponent<Button>();
         ColorBlock colors = button.colors;
         colors.normalColor = Color.white;
-        colors.highlightedColor = new Color(1.08f, 1.08f, 1.08f, 1f);
-        colors.pressedColor = new Color(0.76f, 0.76f, 0.76f, 1f);
-        colors.disabledColor = new Color(0.55f, 0.55f, 0.55f, 0.5f);
+        colors.highlightedColor = panelSprite != null ? new Color(1.08f, 1.04f, 0.94f, 1f) : new Color(1.08f, 1.08f, 1.08f, 1f);
+        colors.pressedColor = panelSprite != null ? new Color(0.72f, 0.64f, 0.50f, 1f) : new Color(0.76f, 0.76f, 0.76f, 1f);
+        colors.disabledColor = panelSprite != null ? new Color(0.48f, 0.45f, 0.39f, 0.62f) : new Color(0.55f, 0.55f, 0.55f, 0.5f);
         button.colors = colors;
 
-        TMP_Text buttonText = Text(go.transform, "Label", label, 28, textColor, TextAlignmentOptions.Center);
+        TMP_Text buttonText = Text(go.transform, "Label", label, 28, panelSprite != null ? Hex("2B241B") : textColor, TextAlignmentOptions.Center);
         buttonText.enableAutoSizing = true;
         return button;
+    }
+
+    private static Sprite GetButtonPanelSprite()
+    {
+        if (buttonPanelSprite != null)
+            return buttonPanelSprite;
+
+        Texture2D texture = Resources.Load<Texture2D>("Art/UI/button_panel");
+        if (texture == null)
+            return null;
+
+        Vector4 border = new Vector4(28f, 28f, 24f, 24f);
+        buttonPanelSprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect, border);
+        return buttonPanelSprite;
     }
 
     public static TMP_InputField InputField(Transform parent, string placeholder)

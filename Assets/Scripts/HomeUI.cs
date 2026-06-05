@@ -68,16 +68,16 @@ public class HomeUI : MonoBehaviour
         Image shade = RuntimeUI.Panel(parent, "Guide Shade", new Color(0f, 0f, 0f, 0.58f), Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
         guidePanel = shade.gameObject;
 
-        Image panel = RuntimeUI.Panel(shade.transform, "Guide Panel", new Color(1f, 0.96f, 0.84f, 0.96f), new Vector2(0.52f, 0.16f), new Vector2(0.90f, 0.86f), Vector2.zero, Vector2.zero);
-        RuntimeUI.AddVerticalLayout(panel.gameObject, 34, 18);
+        Image panel = RuntimeUI.Panel(shade.transform, "Guide Panel", new Color(1f, 0.96f, 0.84f, 0.97f), new Vector2(0.44f, 0.08f), new Vector2(0.92f, 0.90f), Vector2.zero, Vector2.zero);
+        RuntimeUI.AddVerticalLayout(panel.gameObject, 28, 14);
         TMP_Text title = RuntimeUI.Text(panel.transform, "Guide Title", "游玩说明", 52, RuntimeUI.Ink, TextAlignmentOptions.Center);
-        RuntimeUI.Layout(title.gameObject, 78, 92);
+        RuntimeUI.Layout(title.gameObject, 70, 84);
         TMP_Text body = RuntimeUI.Text(panel.transform, "Guide Body",
-            "1. 选择日语或英语后进入路线地图。\n2. 每个圆点是一场关卡，路线会随机生成。\n3. 普通怪、精英和首领会逐步提高词汇难度。\n4. 输入正确答案会攻击敌人，并显示正确写法。\n5. 答错或超时会扣生命，并自动记录到错题本。\n6. 进度会自动保存，回到首页可继续。",
-            30, RuntimeUI.Hex("44516A"), TextAlignmentOptions.TopLeft);
-        RuntimeUI.Layout(body.gameObject, 360, 430);
+            "冒险目标\n选择路线进入关卡，用单词作答来攻击怪物。击败 Boss 后本轮路线通关，可以继续生成新路线挑战更高难度。\n\n答题战斗\n根据中文提示输入日语读法或英文拼写。答得越快伤害越高，连续答对会累积连击，并可能触发暴击、回血或额外奖励。答错会显示正确写法，并把词加入错题本；普通错误会短暂停顿后继续，死亡或特殊挑战才需要手动确认。\n\n地图节点\n普通关适合积累金币和经验；精英关更危险，但胜利后更容易获得遗物；商店可以花金币回血、买遗物、删错题或给下一战加时；事件会给你风险选择；宝箱提供奖励；复习节点会考错题，答对后能清理错题并获得收益；深处是 Boss。\n\n怪物规则\n不同怪物会改变打法：史莱姆答错后会要求重答同题，幽灵会禁用提示，忍者会压缩时间但奖励更多，法师会遮蔽部分提示，Boss 会切换规则。进入战斗前先看怪物说明，再决定是否用提示或保守作答。\n\n成长与错题\n金币用于商店消费，经验会提升等级，遗物会改变本轮构筑。最多可装备 3 个遗物，满了以后新遗物会替换最早的一个。错题本不是惩罚，而是复习资源；复习节点和部分遗物会把错题变成战斗收益。\n\n保存\n路线进度会自动保存。返回首页后可以继续进度，也可以生成新路线重新开始。",
+            24, RuntimeUI.Hex("44516A"), TextAlignmentOptions.TopLeft);
+        RuntimeUI.Layout(body.gameObject, 560, 650);
         Button close = RuntimeUI.Button(panel.transform, "Close Guide", "关闭", RuntimeUI.Teal, Color.white);
-        RuntimeUI.Layout(close.gameObject, 72, 84);
+        RuntimeUI.Layout(close.gameObject, 66, 80);
         close.onClick.AddListener(() => SetGuideVisible(false));
         SetGuideVisible(false);
     }

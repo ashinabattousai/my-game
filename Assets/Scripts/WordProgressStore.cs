@@ -10,6 +10,9 @@ public class WordMemory
     public int wrong;
     public int streak;
     public long lastSeenUnix;
+    public long nextReviewUnix;
+    public float ease = 2.3f;
+    public int intervalDays;
 }
 
 [Serializable]
@@ -33,7 +36,7 @@ public static class WordProgressStore
                 return cache.items[i];
         }
 
-        return new WordMemory { id = id };
+        return new WordMemory { id = id, ease = 2.3f };
     }
 
     public static void Record(string lang, string prompt, bool correct)
@@ -52,22 +55,30 @@ public static class WordProgressStore
 
         if (memory == null)
         {
-            memory = new WordMemory { id = id };
+            memory = new WordMemory { id = id, ease = 2.3f };
             cache.items.Add(memory);
         }
 
+        long now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        float ease = memory.ease <= 0f ? 2.3f : memory.ease;
         if (correct)
         {
             memory.correct++;
             memory.streak = Mathf.Max(1, memory.streak + 1);
+            memory.ease = Mathf.Clamp(ease + 0.08f, 1.3f, 3.0f);
+            memory.intervalDays = Mathf.Max(1, memory.intervalDays == 0 ? 1 : Mathf.RoundToInt(memory.intervalDays * memory.ease));
+            memory.nextReviewUnix = now + Mathf.Max(1, memory.intervalDays) * 86400L;
         }
         else
         {
             memory.wrong++;
             memory.streak = 0;
+            memory.ease = Mathf.Clamp(ease - 0.25f, 1.3f, 3.0f);
+            memory.intervalDays = 0;
+            memory.nextReviewUnix = now + 300L;
         }
 
-        memory.lastSeenUnix = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        memory.lastSeenUnix = now;
         Save();
     }
 
@@ -76,7 +87,7 @@ public static class WordProgressStore
         WordMemory memory = Get(lang, prompt);
         if (memory.correct == 0 && memory.wrong == 0)
             return "新词";
-        if (memory.wrong > memory.correct || memory.streak == 0)
+        if (memory.wrong > memory.correct || memory.streak == 0 || IsDue(memory))
             return "需复习";
         if (memory.streak >= 3)
             return "较熟";
@@ -100,6 +111,8 @@ public static class WordProgressStore
         WordMemory memory = Get(lang, prompt);
         if (memory.correct == 0 && memory.wrong == 0)
             return 4;
+        if (IsDue(memory))
+            return 8;
         if (memory.wrong > memory.correct)
             return 7;
         if (memory.streak == 0)
@@ -107,6 +120,11 @@ public static class WordProgressStore
         if (memory.streak >= 3)
             return 1;
         return 3;
+    }
+
+    private static bool IsDue(WordMemory memory)
+    {
+        return memory.nextReviewUnix > 0 && memory.nextReviewUnix <= DateTimeOffset.UtcNow.ToUnixTimeSeconds();
     }
 
     private static void EnsureLoaded()

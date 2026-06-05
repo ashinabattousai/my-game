@@ -11,8 +11,11 @@ public class WordList
 public class WordDatabase : MonoBehaviour
 {
     [SerializeField] private TextAsset wordsJson;
+    [SerializeField] private string primaryResourcePath = "Data/words";
+    [SerializeField] private string cleanFallbackResourcePath = "Data/words_clean";
     [SerializeField] private bool preferCleanFallbackFirst = false;
     [SerializeField] private bool preferCleanFallbackWhenCorrupt = true;
+    [SerializeField] private bool mergeInspectorWordsJson = false;
     [SerializeField] private int recentHistoryLimit = 10;
 
     public Entry[] Entries { get; private set; }
@@ -26,7 +29,7 @@ public class WordDatabase : MonoBehaviour
 
     private void Load()
     {
-        Entry[] cleanFallback = SanitizeEntries(ReadEntries(Resources.Load<TextAsset>("Data/words_clean")), out int cleanSkipped);
+        Entry[] cleanFallback = SanitizeEntries(ReadEntries(Resources.Load<TextAsset>(cleanFallbackResourcePath)), out int cleanSkipped);
         if (preferCleanFallbackFirst)
         {
             if (cleanFallback.Length > 0)
@@ -37,7 +40,13 @@ public class WordDatabase : MonoBehaviour
             }
         }
 
-        Entry[] primary = SanitizeEntries(ReadEntries(wordsJson), out int primarySkipped);
+        Entry[] resourcePrimary = SanitizeEntries(ReadEntries(Resources.Load<TextAsset>(primaryResourcePath)), out int resourceSkipped);
+        int inspectorSkipped = 0;
+        Entry[] inspectorPrimary = resourcePrimary.Length == 0 || mergeInspectorWordsJson
+            ? SanitizeEntries(ReadEntries(wordsJson), out inspectorSkipped)
+            : Array.Empty<Entry>();
+        Entry[] primary = resourcePrimary.Length > 0 ? MergeUnique(resourcePrimary, inspectorPrimary) : inspectorPrimary;
+        int primarySkipped = resourceSkipped + inspectorSkipped;
 
         if (primary.Length == 0 || (preferCleanFallbackWhenCorrupt && LooksCorrupt(primary)))
         {
@@ -88,14 +97,53 @@ public class WordDatabase : MonoBehaviour
 
             result.Add(new Entry
             {
+                id = string.IsNullOrWhiteSpace(entry.id) ? MakeGeneratedId(entry.lang, prompt, answers) : entry.id.Trim(),
                 prompt = prompt,
+                questionType = string.IsNullOrWhiteSpace(entry.questionType) ? InferQuestionType(entry) : entry.questionType.Trim(),
+                answerMode = string.IsNullOrWhiteSpace(entry.answerMode) ? InferAnswerMode(entry) : entry.answerMode.Trim(),
+                primaryAnswer = CleanSingleAnswer(string.IsNullOrWhiteSpace(entry.primaryAnswer) ? PickPrimaryAnswer(entry, answers) : entry.primaryAnswer),
                 answers = answers,
+                displayAnswer = CleanSingleAnswer(string.IsNullOrWhiteSpace(entry.displayAnswer) ? BuildDisplayAnswer(entry, answers) : entry.displayAnswer),
+                kana = CleanSingleAnswer(entry.kana),
+                kanji = CleanSingleAnswer(entry.kanji),
+                romaji = CleanTextArray(entry.romaji),
+                meaning = CleanTextArray(entry.meaning),
+                pos = CleanSingleAnswer(entry.pos),
                 lang = string.IsNullOrWhiteSpace(entry.lang) ? "jp" : entry.lang.Trim(),
-                difficulty = Mathf.Clamp(entry.difficulty, 0, 3)
+                difficulty = Mathf.Clamp(entry.difficulty, 0, 3),
+                level = CleanSingleAnswer(entry.level),
+                chapter = CleanSingleAnswer(entry.chapter),
+                tags = CleanTextArray(entry.tags),
+                hint = CleanSingleAnswer(entry.hint),
+                example = CleanSingleAnswer(entry.example),
+                exampleMeaning = CleanSingleAnswer(entry.exampleMeaning)
             });
         }
 
         return result.ToArray();
+    }
+
+    public string GetDisplayAnswer(Entry entry)
+    {
+        if (entry == null)
+            return "没有答案";
+        if (!string.IsNullOrWhiteSpace(entry.displayAnswer))
+            return entry.displayAnswer;
+        return BuildDisplayAnswer(entry, entry.answers);
+    }
+
+    public string GetHintAnswer(Entry entry)
+    {
+        if (entry == null)
+            return "";
+        if (!string.IsNullOrWhiteSpace(entry.primaryAnswer))
+            return entry.primaryAnswer.Trim();
+        return PickPrimaryAnswer(entry, entry.answers);
+    }
+
+    public string GetStudyHint(Entry entry)
+    {
+        return entry != null && !string.IsNullOrWhiteSpace(entry.hint) ? entry.hint.Trim() : "";
     }
 
     private Entry[] MergeUnique(Entry[] primary, Entry[] fallback)
@@ -183,6 +231,155 @@ public class WordDatabase : MonoBehaviour
                 result.Add(answer);
         }
         return result.ToArray();
+    }
+
+    private string CleanSingleAnswer(string value)
+    {
+        string text = value == null ? "" : value.Trim();
+        return IsUsableText(text) ? text : "";
+    }
+
+    private string[] CleanTextArray(string[] values)
+    {
+        if (values == null || values.Length == 0)
+            return Array.Empty<string>();
+
+        List<string> result = new List<string>();
+        HashSet<string> seen = new HashSet<string>();
+        for (int i = 0; i < values.Length; i++)
+        {
+            string value = CleanSingleAnswer(values[i]);
+            if (!string.IsNullOrEmpty(value) && seen.Add(value))
+                result.Add(value);
+        }
+        return result.ToArray();
+    }
+
+    private string PickPrimaryAnswer(Entry entry, string[] answers)
+    {
+        if (answers == null || answers.Length == 0)
+            return "";
+
+        string lang = entry != null ? entry.lang : "";
+        if (lang == "jp")
+        {
+            for (int i = 0; i < answers.Length; i++)
+            {
+                if (LooksLikeRomaji(answers[i]))
+                    return answers[i];
+            }
+        }
+
+        return answers[0];
+    }
+
+    private string BuildDisplayAnswer(Entry entry, string[] answers)
+    {
+        List<string> parts = new List<string>();
+        HashSet<string> seen = new HashSet<string>();
+
+        AddDisplayPart(parts, seen, entry != null ? entry.kana : "");
+        AddDisplayPart(parts, seen, entry != null ? entry.kanji : "");
+        if (entry != null && entry.romaji != null)
+        {
+            for (int i = 0; i < entry.romaji.Length; i++)
+                AddDisplayPart(parts, seen, entry.romaji[i]);
+        }
+
+        if (answers != null)
+        {
+            if (entry != null && entry.lang == "jp")
+            {
+                for (int i = 0; i < answers.Length; i++)
+                {
+                    if (ContainsKana(answers[i]))
+                        AddDisplayPart(parts, seen, answers[i]);
+                }
+                for (int i = 0; i < answers.Length; i++)
+                {
+                    if (!LooksLikeRomaji(answers[i]) && !ContainsKana(answers[i]))
+                        AddDisplayPart(parts, seen, answers[i]);
+                }
+                for (int i = 0; i < answers.Length; i++)
+                {
+                    if (LooksLikeRomaji(answers[i]))
+                        AddDisplayPart(parts, seen, answers[i]);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < answers.Length; i++)
+                    AddDisplayPart(parts, seen, answers[i]);
+            }
+        }
+
+        return parts.Count > 0 ? string.Join(" / ", parts.ToArray()) : "没有答案";
+    }
+
+    private void AddDisplayPart(List<string> parts, HashSet<string> seen, string value)
+    {
+        string text = CleanSingleAnswer(value);
+        if (!string.IsNullOrEmpty(text) && seen.Add(text))
+            parts.Add(text);
+    }
+
+    private string InferAnswerMode(Entry entry)
+    {
+        if (entry == null || entry.lang != "jp")
+            return "exact_text";
+        return "kana_or_romaji";
+    }
+
+    private string InferQuestionType(Entry entry)
+    {
+        if (entry == null)
+            return "zh_to_word";
+        if (entry.lang == "jp")
+            return "zh_to_romaji";
+        if (entry.lang == "en")
+            return "zh_to_english";
+        return "zh_to_word";
+    }
+
+    private string MakeGeneratedId(string lang, string prompt, string[] answers)
+    {
+        string firstAnswer = answers != null && answers.Length > 0 ? answers[0] : "";
+        return (string.IsNullOrWhiteSpace(lang) ? "word" : lang.Trim()) + "_" + Mathf.Abs((prompt + "|" + firstAnswer).GetHashCode()).ToString("X");
+    }
+
+    private bool LooksLikeRomaji(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return false;
+
+        bool hasLetter = false;
+        for (int i = 0; i < value.Length; i++)
+        {
+            char c = value[i];
+            if (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z')
+            {
+                hasLetter = true;
+                continue;
+            }
+            if (c == '-' || c == '\'' || char.IsWhiteSpace(c))
+                continue;
+            return false;
+        }
+        return hasLetter;
+    }
+
+    private bool ContainsKana(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+            return false;
+
+        for (int i = 0; i < value.Length; i++)
+        {
+            int code = value[i];
+            if ((code >= 0x3040 && code <= 0x30FF) || (code >= 0x31F0 && code <= 0x31FF))
+                return true;
+        }
+        return false;
     }
 
     private bool IsUsableText(string value)

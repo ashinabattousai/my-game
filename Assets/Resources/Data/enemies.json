@@ -1,0 +1,9 @@
+﻿{
+  "version": 1,
+  "enemies": [
+    { "name": "Ink Slime", "baseMaxHp": 3, "isBoss": false, "artResource": "Art/enemy_ink_slime", "faction": "Study Ooze", "ruleType": "slime", "minKills": 0, "tier": 1, "tags": ["基础", "追加一题"] },
+    { "name": "Dire Wolf", "baseMaxHp": 4, "isBoss": false, "artResource": "Art/Enemies/enemy_dire_wolf", "faction": "Western Fantasy", "ruleType": "ninja", "minKills": 1, "tier": 1, "tags": ["自然", "限时"] },
+    { "name": "Kitsune Adept", "baseMaxHp": 6, "isBoss": false, "artResource": "Art/Enemies/enemy_kitsune", "faction": "Japanese Myth", "ruleType": "mage", "minKills": 3, "tier": 2, "tags": ["抽象词", "遮蔽"] },
+    { "name": "Lich Librarian", "baseMaxHp": 10, "isBoss": true, "artResource": "Art/Enemies/enemy_lich", "faction": "Western Boss", "ruleType": "boss", "minKills": 5, "tier": 3, "tags": ["Boss", "混合规则"] }
+  ]
+}

@@ -1,0 +1,285 @@
+﻿{
+    "version":  2,
+    "entries":  [
+                    {
+                        "id":  "jp_n5_noun_0001",
+                        "lang":  "jp",
+                        "prompt":  "樱花",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "sakura",
+                        "answers":  [
+                                        "sakura",
+                                        "さくら",
+                                        "桜"
+                                    ],
+                        "displayAnswer":  "さくら / 桜 / sakura",
+                        "kana":  "さくら",
+                        "kanji":  "桜",
+                        "romaji":  [
+                                       "sakura"
+                                   ],
+                        "meaning":  [
+                                        "樱花"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "N5",
+                        "tags":  [
+                                     "基础词",
+                                     "自然",
+                                     "N5",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_foundation"
+                    },
+                    {
+                        "id":  "jp_n5_noun_0002",
+                        "lang":  "jp",
+                        "prompt":  "早上好",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "ohayou",
+                        "answers":  [
+                                        "ohayou",
+                                        "おはよう",
+                                        "おはようございます"
+                                    ],
+                        "displayAnswer":  "おはよう / ohayou / おはようございます",
+                        "kana":  "おはよう",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "ohayou"
+                                   ],
+                        "meaning":  [
+                                        "早上好"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "N5",
+                        "tags":  [
+                                     "基础词",
+                                     "常用词",
+                                     "N5",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_foundation"
+                    },
+                    {
+                        "id":  "jp_n5_noun_0003",
+                        "lang":  "jp",
+                        "prompt":  "谢谢",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "arigatou",
+                        "answers":  [
+                                        "arigatou",
+                                        "ありがとう",
+                                        "ありがとうございます"
+                                    ],
+                        "displayAnswer":  "ありがとう / arigatou / ありがとうございます",
+                        "kana":  "ありがとう",
+                        "kanji":  "",
+                        "romaji":  [
+                                       "arigatou"
+                                   ],
+                        "meaning":  [
+                                        "谢谢"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "N5",
+                        "tags":  [
+                                     "基础词",
+                                     "常用词",
+                                     "N5",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_foundation"
+                    },
+                    {
+                        "id":  "jp_n5_noun_0004",
+                        "lang":  "jp",
+                        "prompt":  "水",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "mizu",
+                        "answers":  [
+                                        "mizu",
+                                        "みず",
+                                        "水"
+                                    ],
+                        "displayAnswer":  "みず / 水 / mizu",
+                        "kana":  "みず",
+                        "kanji":  "水",
+                        "romaji":  [
+                                       "mizu"
+                                   ],
+                        "meaning":  [
+                                        "水"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "N5",
+                        "tags":  [
+                                     "基础词",
+                                     "自然",
+                                     "N5",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_foundation"
+                    },
+                    {
+                        "id":  "jp_n5_noun_0005",
+                        "lang":  "jp",
+                        "prompt":  "火",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "hi",
+                        "answers":  [
+                                        "hi",
+                                        "ひ",
+                                        "火"
+                                    ],
+                        "displayAnswer":  "ひ / 火 / hi",
+                        "kana":  "ひ",
+                        "kanji":  "火",
+                        "romaji":  [
+                                       "hi"
+                                   ],
+                        "meaning":  [
+                                        "火"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "N5",
+                        "tags":  [
+                                     "基础词",
+                                     "自然",
+                                     "N5",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_foundation"
+                    },
+                    {
+                        "id":  "jp_n5_noun_0006",
+                        "lang":  "jp",
+                        "prompt":  "月亮",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "tsuki",
+                        "answers":  [
+                                        "tsuki",
+                                        "つき",
+                                        "月"
+                                    ],
+                        "displayAnswer":  "つき / 月 / tsuki",
+                        "kana":  "つき",
+                        "kanji":  "月",
+                        "romaji":  [
+                                       "tsuki"
+                                   ],
+                        "meaning":  [
+                                        "月亮"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "N5",
+                        "tags":  [
+                                     "基础词",
+                                     "自然",
+                                     "N5",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_foundation"
+                    },
+                    {
+                        "id":  "jp_n5_noun_0007",
+                        "lang":  "jp",
+                        "prompt":  "星星",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "hoshi",
+                        "answers":  [
+                                        "hoshi",
+                                        "ほし",
+                                        "星"
+                                    ],
+                        "displayAnswer":  "ほし / 星 / hoshi",
+                        "kana":  "ほし",
+                        "kanji":  "星",
+                        "romaji":  [
+                                       "hoshi"
+                                   ],
+                        "meaning":  [
+                                        "星星"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "N5",
+                        "tags":  [
+                                     "基础词",
+                                     "自然",
+                                     "N5",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_foundation"
+                    },
+                    {
+                        "id":  "jp_n5_noun_0008",
+                        "lang":  "jp",
+                        "prompt":  "学校",
+                        "answerMode":  "kana_or_romaji",
+                        "primaryAnswer":  "gakkou",
+                        "answers":  [
+                                        "gakkou",
+                                        "がっこう",
+                                        "学校"
+                                    ],
+                        "displayAnswer":  "がっこう / 学校 / gakkou",
+                        "kana":  "がっこう",
+                        "kanji":  "学校",
+                        "romaji":  [
+                                       "gakkou"
+                                   ],
+                        "meaning":  [
+                                        "学校"
+                                    ],
+                        "pos":  "noun",
+                        "difficulty":  1,
+                        "level":  "N5",
+                        "tags":  [
+                                     "基础词",
+                                     "学校",
+                                     "N5",
+                                     "日语"
+                                 ],
+                        "hint":  "先想罗马音，再对应假名或汉字。",
+                        "example":  "",
+                        "exampleMeaning":  "",
+                        "questionType":  "zh_to_romaji",
+                        "chapter":  "jp_foundation"
+                    }
+                ]
+}
